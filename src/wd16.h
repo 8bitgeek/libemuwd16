@@ -183,6 +183,26 @@ void set_pri_high(void);
 void trace_Interrupt(int i);
 void trace_fmtInvalid(void);
 
+/*-------------------------------------------------------------------*/
+/* memory                                                            */
+/*-------------------------------------------------------------------*/
+void getAMbyte(unsigned char *chr, long address);
+void getAMword(unsigned char *chr, long address);
+void putAMbyte(unsigned char *chr, long address);
+void putAMword(unsigned char *chr, long address);
+uint16_t getAMaddrBYmode(int regnum, int mode, int offset);
+uint16_t getAMwordBYmode(int regnum, int mode, int offset);
+void undAMwordBYmode(int regnum, int mode);
+void putAMwordBYmode(int regnum, int mode, int offset, uint16_t theword);
+uint8_t getAMbyteBYmode(int regnum, int mode, int offset);
+void undAMbyteBYmode(int regnum, int mode);
+void putAMbyteBYmode(int regnum, int mode, int offset, uint8_t thebyte);
+
+
+/*-------------------------------------------------------------------*/
+/* misc                                                              */
+/*-------------------------------------------------------------------*/
+void config_memdump(uint16_t where, uint16_t fsize);
 
 
 #ifdef __cplusplus

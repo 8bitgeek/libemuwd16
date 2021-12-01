@@ -32,7 +32,7 @@
 
 void do_fmt_10() {
   int op10, smode, sreg, dmode, dreg, itmp;
-  U16 tmp, tmp2, tmp3, n1word, n2word;
+  uint16_t tmp, tmp2, tmp3, n1word, n2word;
 
   //      FORMAT 10 OP CODES
   //      DOUBLE OPS - ONE TO THREE WORDS - SM0 TO SM7, DM0 TO DM7

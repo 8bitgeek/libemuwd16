@@ -43,6 +43,8 @@ void trace_fmt4_svca(char *opc, int arg);
 void trace_fmt4_svcb(char *opc, int arg);
 void trace_fmt4_svcc(char *opc, int arg);
 
+void vdkdvr(void);
+
 #ifdef __cplusplus
 }
 #endif

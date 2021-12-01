@@ -32,7 +32,7 @@
 
 void do_fmt_7() {
   int op7, mode, reg;
-  U16 tmp, tmp2, tmp3, n1word;
+  uint16_t tmp, tmp2, tmp3, n1word;
 
   //      FORMAT 7 OP CODES
   //

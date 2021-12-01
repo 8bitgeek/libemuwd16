@@ -30,7 +30,7 @@ C        = gcc
 
 # CFLAGS   = -O1 -Wall -DVERSION=$(VERSION) -ggdb
 
-CFLAGS   = -Os -DVERSION=$(VERSION) -Wno-unused-result 			\
+CFLAGS   = -Os -I./src -DVERSION=$(VERSION) -Wno-unused-result 			\
 									-Wno-pointer-to-int-cast 	\
 									-Wno-format 				\
 									-Wno-discarded-qualifiers 	\
@@ -44,12 +44,20 @@ EXEFILES = ad16 tapfil filtap tapdir
 
 TARFILES = makefile *.c *.h *.ini
 
-OBJS     = wd16.o \
-	   cpu-fmt1.o cpu-fmt2.o cpu-fmt3.o cpu-fmt4.o \
-	   cpu-fmt5.o cpu-fmt6.o cpu-fmt7.o cpu-fmt8.o \
-	   cpu-fmt9.o cpu-fmt10.o cpu-fmt11.o
+OBJS     = src/wd16.o \
+	   		src/cpu-fmt1.o \
+	   		src/cpu-fmt2.o \
+	   		src/cpu-fmt3.o \
+	   		src/cpu-fmt4.o \
+	   		src/cpu-fmt5.o \
+	   		src/cpu-fmt6.o \
+	   		src/cpu-fmt7.o \
+	   		src/cpu-fmt8.o \
+	   		src/cpu-fmt9.o \
+	   		src/cpu-fmt10.o \
+	   		src/cpu-fmt11.o
 	  
-HEADERS  = wd16.h am-ddb.h
+HEADERS  = src/wd16.h src/am-ddb.h
 
 all:	   $(EXEFILES)
 
@@ -62,7 +70,7 @@ $(OBJS): %.o: %.c $(HEADERS) makefile
 
 
 clean:
-	rm -f $(EXEFILES) $(EXEFILES).exe *.o
+	rm -f $(EXEFILES) $(EXEFILES).exe src/*.o
 
 tar:
 	tar cvzf ad16-$(VERSION).tar.gz --exclude \*.o $(TARFILES)

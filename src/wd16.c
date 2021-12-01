@@ -227,7 +227,7 @@ void execute_instruction() {
 /*-------------------------------------------------------------------*/
 void perform_interrupt() {
   int i = 0;
-  U16 tmp;
+  uint16_t tmp;
 
   if (regs.stepping == 1)
     return;

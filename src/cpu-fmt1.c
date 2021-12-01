@@ -32,7 +32,7 @@
 
 void do_fmt_1() {
   unsigned tmp;
-  U16 mask, oldmask, newop;
+  uint16_t mask, oldmask, newop;
 
   //      FORMAT 1 OP CODES
   //

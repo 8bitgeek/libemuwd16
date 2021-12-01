@@ -39,7 +39,7 @@
 
 void do_fmt_4() {
   int op4, arg;
-  U16 tmpa, tmpb;
+  uint16_t tmpa, tmpb;
 
   //      FORMAT 4 OP CODES
   //
@@ -238,7 +238,7 @@ int svcc_assist(int arg) {
     return (true);
   }
   if (arg == 7) { // snap JOBBAS thru JOBSIZ to trace
-    U16 LINK, R0, SIZE;
+    uint16_t LINK, R0, SIZE;
     getAMword((unsigned char *)&R0, 0x4E);      // JOBCUR
     getAMword((unsigned char *)&LINK, R0 + 12); // JOBBAS
     getAMword((unsigned char *)&SIZE, R0 + 14); // JOBSIZ
@@ -247,7 +247,7 @@ int svcc_assist(int arg) {
     return (true);
   }
   // if (arg == 8) { // special snap of particular memory block to trace
-  //      U16 LINK, R0, SIZE;
+  //      uint16_t LINK, R0, SIZE;
   //      getAMword((unsigned char *)&R0,   0x4E);  // JOBCUR
   //      getAMword((unsigned char *)&LINK, R0+12); // JOBBAS
   //      fprintf(stderr,"\n\r<><>SVCC 8 memory dump<><>\n\r");

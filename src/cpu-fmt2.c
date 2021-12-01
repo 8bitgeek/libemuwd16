@@ -32,7 +32,7 @@
 
 void do_fmt_2() {
   int op2, reg;
-  U16 tmp;
+  uint16_t tmp;
 
   //      FORMAT 2 OP CODES
   //

@@ -32,8 +32,8 @@
 
 void do_fmt_8() {
   int op8, sreg, dreg;
-  U16 t16;
-  U8 t8;
+  uint16_t t16;
+  uint8_t t8;
 
   //       FORMAT 8 OP CODES
   //       DOUBLE OPS - SINGLE WORD - SM0 AND DM0 ONLY

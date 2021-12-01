@@ -49,18 +49,18 @@ typedef union {
 #if AM_BYTE_ORDER == AM_BIG_ENDIAN
   uint64_t AFP_LL;
   struct {
-    U16 AFP_highbits;
+    uint16_t AFP_highbits;
     AFP1 AFP_1;
-    U16 AFP_2;
-    U16 AFP_3;
+    uint16_t AFP_2;
+    uint16_t AFP_3;
   } words;
 #else
   uint64_t AFP_LL;
   struct {
-    U16 AFP_3;
-    U16 AFP_2;
+    uint16_t AFP_3;
+    uint16_t AFP_2;
     AFP1 AFP_1;
-    U16 AFP_highbits;
+    uint16_t AFP_highbits;
   } words;
 #endif
 } AFP;
@@ -148,7 +148,7 @@ int afp_put(
 /*-------------------------------------------------------------------*/
 void do_fmt_11() {
   int op11, sind, smode, sreg, dind, dmode, dreg, oflg;
-  U16 saddr, daddr;
+  uint16_t saddr, daddr;
   AFP afp_s, afp_d, afp_r;
   double s, d, r;
 

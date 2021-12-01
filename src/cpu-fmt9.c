@@ -40,8 +40,8 @@
 
 void do_fmt_9() {
   int op9, sreg, splus, dmode, dreg, doffset, i, count;
-  U16 n1word, tmp, tmp2;
-  U32 big;
+  uint16_t n1word, tmp, tmp2;
+  uint32_t big;
 
   //      FORMAT 9 OP CODES
   //      DOUBLE OPS - ONE OR TWO WORDS - SM0, DM0 to DM7
