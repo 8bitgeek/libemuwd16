@@ -145,37 +145,12 @@ typedef struct _REGS {                  /* Processor registers       */
 } REGS;
 
 
-char instruction_type[65536];  /* maps all words to inst format type */
-
-REGS regs;
-
-uint16_t oldPCs[256];       /* table of prior PC's */
-unsigned oldPCindex;        /* pointer to next entry in prior PC's table */
-uint16_t op, opPC;          /* current opcode (base) and its location */
-char cpu4_svcctxt[16];      /* my SVCCs starts LO and go up, or */
-                            /*          starts HI and go down.. */
-
-pthread_mutex_t intlock_t;  /* interrupt lock */
-pthread_t cpu_t;            /* cpu thread */
-
-/*-------------------------------------------------------------------*/
-/* in cpu-fmt?.c                                                     */
-/*-------------------------------------------------------------------*/
-
-
 void build_decode(void);
 void do_fmt_invalid(void);
 void execute_instruction(void);
 void perform_interrupt(void);
 void cpu_thread(void);
 void cpu_stop(void);
-
-/*-------------------------------------------------------------------*/
-/* in priority.c                                                     */
-/*-------------------------------------------------------------------*/
-void set_pri_low(void);
-void set_pri_normal(void);
-void set_pri_high(void);
 
 /*-------------------------------------------------------------------*/
 /* in trace.c                                                        */

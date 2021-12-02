@@ -37,6 +37,21 @@
 #include "cpu-fmt10.h"
 #include "cpu-fmt11.h"
 
+REGS regs;
+
+uint16_t oldPCs[256];       /* table of prior PC's */
+unsigned oldPCindex;        /* pointer to next entry in prior PC's table */
+uint16_t op, opPC;          /* current opcode (base) and its location */
+char cpu4_svcctxt[16];      /* my SVCCs starts LO and go up, or */
+                            /*          starts HI and go down.. */
+
+pthread_mutex_t intlock_t;  /* interrupt lock */
+pthread_t cpu_t;            /* cpu thread */
+
+char instruction_type[65536];  /* maps all words to inst format type */
+
+
+
 /*-------------------------------------------------------------------*/
 /*                                                                   */
 /* This module executes am100 instructions.                          */
@@ -290,8 +305,6 @@ void perform_interrupt() {
 /*-------------------------------------------------------------------*/
 void cpu_thread() {
 
-  set_pri_low();
-
   do {
     if (regs.waiting == 0) {
       if ((regs.intpending == 1) && (regs.PS.I2 == 1))
@@ -304,9 +317,6 @@ void cpu_thread() {
     } else
       usleep(500);
   } while (regs.halting == 0);
-
-  // fprintf(stderr,"CPU thread stopping.\n"); fflush(stderr);
-
   pthread_exit(0);
 } /* end function cpu_thread */
 
