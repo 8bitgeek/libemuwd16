@@ -1,4 +1,4 @@
-/* cpu-fmt1.h    (c) Copyright Mike Sharkey, 2021                    */
+/* am100.h       (c) Copyright Mike Noel, 2001-2008                  */
 /* ----------------------------------------------------------------- */
 /*                                                                   */
 /* This software is an emulator for the Alpha-Micro AM-100 computer. */
@@ -23,18 +23,17 @@
 /* legally obtained from an authorized source.                       */
 /*                                                                   */
 /* ----------------------------------------------------------------- */
-#ifndef __CPU_FMT1_H__
-#define __CPU_FMT1_H__
+#ifndef __WD16_INSTRUCTION_TYPE_H__
+#define __WD16_INSTRUCTION_TYPE_H__
 
-#include "wd16.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
 
-void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state);
-void trace_fmt1(char *opc, int mask);
+uint8_t instruction_type(uint16_t op);
 
 #ifdef __cplusplus
 }

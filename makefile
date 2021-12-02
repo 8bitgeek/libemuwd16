@@ -55,7 +55,8 @@ OBJS     = src/wd16.o \
 	   		src/cpu-fmt8.o \
 	   		src/cpu-fmt9.o \
 	   		src/cpu-fmt10.o \
-	   		src/cpu-fmt11.o
+	   		src/cpu-fmt11.o \
+	   		src/instruction-type.o
 	  
 HEADERS  = src/wd16.h src/am-ddb.h
 

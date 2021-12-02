@@ -33,7 +33,7 @@ extern "C"
 {
 #endif
 
-void do_fmt_3(void);
+void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state);
 void trace_fmt3(char *opc, int arg);
 
 #ifdef __cplusplus

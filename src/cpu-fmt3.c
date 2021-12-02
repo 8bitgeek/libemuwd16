@@ -30,7 +30,7 @@
   if (regs.tracing)                                                            \
     trace_fmt3(opc, arg);
 
-void do_fmt_3() {
+void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
   int op3, arg;
 
   //      FORMAT 3 OP CODES

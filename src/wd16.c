@@ -36,93 +36,9 @@
 #include "cpu-fmt9.h"
 #include "cpu-fmt10.h"
 #include "cpu-fmt11.h"
+#include "instruction-type.h"
 
-REGS regs;
-
-uint16_t oldPCs[256];       /* table of prior PC's */
-unsigned oldPCindex;        /* pointer to next entry in prior PC's table */
-uint16_t op, opPC;          /* current opcode (base) and its location */
-char cpu4_svcctxt[16];      /* my SVCCs starts LO and go up, or */
-                            /*          starts HI and go down.. */
-
-pthread_mutex_t intlock_t;  /* interrupt lock */
-pthread_t cpu_t;            /* cpu thread */
-
-char instruction_type[65536];  /* maps all words to inst format type */
-
-
-
-/*-------------------------------------------------------------------*/
-/*                                                                   */
-/* This module executes am100 instructions.                          */
-/*                                                                   */
-/*-------------------------------------------------------------------*/
-
-/*-------------------------------------------------------------------*/
-/* build instruction decode table                                    */
-/*-------------------------------------------------------------------*/
-void build_decode() {
-  int i, j;
-  /* fill table with 0's (invalid opcode type) */
-  for (i = 0; i < 65536; i++)
-    instruction_type[i] = 0;
-  /* fill format 1 part of table */
-  for (i = 0; i < 16; i++)
-    instruction_type[i] = 1;
-  /* fill format 2 part of table */
-  for (i = 16; i < 48; i++)
-    instruction_type[i] = 2;
-  /* fill format 3 part of table */
-  for (i = 48; i < 64; i++)
-    instruction_type[i] = 3;
-  /* fill format 4 part of table */
-  for (i = 64; i < 256; i++)
-    instruction_type[i] = 4;
-  /* fill format 5 part of table */
-  for (i = 1; i < 8; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[j + (i * 256)] = 5;
-  for (i = 0; i < 8; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[32768 + j + (i * 256)] = 5;
-  /* fill format 6 (split ops) part of table */
-  for (i = 8; i < 10; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[j + (i * 256)] = 6;
-  for (i = 8; i < 10; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[32768 + j + (i * 256)] = 6;
-  for (i = 14; i < 16; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[32768 + j + (i * 256)] = 6;
-  /* fill format 7 part of table */
-  for (i = 10; i < 14; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[j + (i * 256)] = 7;
-  for (i = 10; i < 14; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[32768 + j + (i * 256)] = 7;
-  /* fill format 8 part of table */
-  for (i = 14; i < 16; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[j + (i * 256)] = 8;
-  /* fill format 9 part of table */
-  for (i = 112; i < 128; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[j + (i * 256)] = 9;
-  /* fill format 10 part of table */
-  for (i = 16; i < 112; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[j + (i * 256)] = 10;
-  for (i = 16; i < 112; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[32768 + j + (i * 256)] = 10;
-  /* fill format 11 part of table */
-  for (i = 0; i < 5; i++)
-    for (j = 0; j < 256; j++)
-      instruction_type[61440 + j + (i * 256)] = 11;
-
-} /* end function build_decode */
+wd11_cpu_state_t wd11_cpu_state;
 
 /*-------------------------------------------------------------------*/
 /* when the opcode is invalid...                                     */
@@ -162,17 +78,17 @@ void do_fmt_invalid() {
   // --- so, this routine will load up PC from "1C" unless the offending
   // --- opcode is greater than F000 (fmt 11) when it will load from "1A".
   //
-  regs.SP -= 2;
-  putAMword((unsigned char *)&regs.PS, regs.SP);
-  regs.SP -= 2;
-  putAMword((unsigned char *)&regs.PC, regs.SP);
-  regs.waiting = 0;
-  regs.trace = 0;
-  regs.PS.I2 = 0;
-  if (op > 0xf000)
-    getAMword((unsigned char *)&regs.PC, 0x1A);
+  wd11_cpu_state.regs.SP -= 2;
+  putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
+  wd11_cpu_state.regs.SP -= 2;
+  putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
+  wd11_cpu_state.regs.waiting = 0;
+  wd11_cpu_state.regs.trace = 0;
+  wd11_cpu_state.regs.PS.I2 = 0;
+  if (wd11_cpu_state.op > 0xf000)
+    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1A);
   else
-    getAMword((unsigned char *)&regs.PC, 0x1C);
+    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1C);
 
 } /* end function do_fmt_invalid */
 
@@ -182,53 +98,53 @@ void do_fmt_invalid() {
 void execute_instruction() {
   char fmt;
 
-  regs.instcount++;
+  wd11_cpu_state.regs.instcount++;
 
-  oldPCindex = (oldPCindex + 1) % 256;
-  oldPCs[oldPCindex] = opPC = regs.PC;
+  wd11_cpu_state.oldPCindex = (wd11_cpu_state.oldPCindex + 1) % 256;
+  wd11_cpu_state.oldPCs[wd11_cpu_state.oldPCindex] = wd11_cpu_state.opPC = wd11_cpu_state.regs.PC;
 
-  getAMword((unsigned char *)&op, regs.PC);
-  regs.PC += 2;
+  getAMword((unsigned char *)&wd11_cpu_state.op, wd11_cpu_state.regs.PC);
+  wd11_cpu_state.regs.PC += 2;
 
-  fmt = instruction_type[op];
+  fmt = instruction_type(op);
   switch (fmt) {
   case 0:
-    if (regs.tracing) // <<-- here instead of in do_fmt_invalid
+    if (wd11_cpu_state.regs.tracing) // <<-- here instead of in do_fmt_invalid
       trace_fmtInvalid();
     do_fmt_invalid(); // because other fmts may later call
     break;            // do_fmt_invalid if further decode fails
   case 1:
-    do_fmt_1();
+    do_fmt_1(&wd11_cpu_state);
     break;
   case 2:
-    do_fmt_2();
+    do_fmt_2(&wd11_cpu_state);
     break;
   case 3:
-    do_fmt_3();
+    do_fmt_3(&wd11_cpu_state);
     break;
   case 4:
-    do_fmt_4();
+    do_fmt_4(&wd11_cpu_state);
     break;
   case 5:
-    do_fmt_5();
+    do_fmt_5(&wd11_cpu_state);
     break;
   case 6:
-    do_fmt_6();
+    do_fmt_6(&wd11_cpu_state);
     break;
   case 7:
-    do_fmt_7();
+    do_fmt_7(&wd11_cpu_state);
     break;
   case 8:
-    do_fmt_8();
+    do_fmt_8(&wd11_cpu_state);
     break;
   case 9:
-    do_fmt_9();
+    do_fmt_9(&wd11_cpu_state);
     break;
   case 10:
-    do_fmt_10();
+    do_fmt_10(&wd11_cpu_state);
     break;
   case 11:
-    do_fmt_11();
+    do_fmt_11(&wd11_cpu_state);
     break;
   default:
     assert("cpu.c - bad return from inst format lookup");
@@ -244,28 +160,28 @@ void perform_interrupt() {
   int i = 0;
   uint16_t tmp;
 
-  if (regs.stepping == 1)
+  if (wd11_cpu_state.regs.stepping == 1)
     return;
 
-  while ((regs.whichint[i] == 0) && (i < 9))
+  while ((wd11_cpu_state.regs.whichint[i] == 0) && (i < 9))
     i++;
 
-  if (regs.tracing)
+  if (wd11_cpu_state.regs.tracing)
     trace_Interrupt(i);
 
   pthread_mutex_lock(&intlock_t);
 
   switch (i) {
   case 0: // non-vectored
-    regs.SP -= 2;
-    putAMword((unsigned char *)&regs.PS, regs.SP);
-    regs.SP -= 2;
-    putAMword((unsigned char *)&regs.PC, regs.SP);
-    regs.waiting = 0;
-    regs.trace = 0;
-    regs.PS.I2 = 0;
-    getAMword((unsigned char *)&regs.PC, 0x2A); // non-power-fail
-    regs.whichint[i] = 0;
+    wd11_cpu_state.regs.SP -= 2;
+    putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.regs.SP -= 2;
+    putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.regs.waiting = 0;
+    wd11_cpu_state.regs.trace = 0;
+    wd11_cpu_state.regs.PS.I2 = 0;
+    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x2A); // non-power-fail
+    wd11_cpu_state.regs.whichint[i] = 0;
     break;
   case 1:
   case 2:
@@ -275,26 +191,26 @@ void perform_interrupt() {
   case 6:
   case 7:
   case 8:
-    regs.SP -= 2;
-    putAMword((unsigned char *)&regs.PS, regs.SP);
-    regs.SP -= 2;
-    putAMword((unsigned char *)&regs.PC, regs.SP);
-    regs.waiting = 0;
-    regs.trace = 0;
-    regs.PS.I2 = 0;
+    wd11_cpu_state.regs.SP -= 2;
+    putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.regs.SP -= 2;
+    putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.regs.waiting = 0;
+    wd11_cpu_state.regs.trace = 0;
+    wd11_cpu_state.regs.PS.I2 = 0;
     getAMword((unsigned char *)&tmp, 050);
     tmp += (016 - 2 * i);
-    getAMword((unsigned char *)&regs.PC, tmp);
-    regs.PC += tmp;
-    regs.whichint[i] = 0;
+    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, tmp);
+    wd11_cpu_state.regs.PC += tmp;
+    wd11_cpu_state.regs.whichint[i] = 0;
     break;
   default:
     assert("cpu.c - invalid interrupt level");
   }
 
-  for (i = 0, regs.intpending = 0; i < 9; i++)
-    if (regs.whichint[i] == 1)
-      regs.intpending = 1;
+  for (i = 0, wd11_cpu_state.regs.intpending = 0; i < 9; i++)
+    if (wd11_cpu_state.regs.whichint[i] == 1)
+      wd11_cpu_state.regs.intpending = 1;
 
   pthread_mutex_unlock(&intlock_t);
 
@@ -306,17 +222,17 @@ void perform_interrupt() {
 void cpu_thread() {
 
   do {
-    if (regs.waiting == 0) {
-      if ((regs.intpending == 1) && (regs.PS.I2 == 1))
+    if (wd11_cpu_state.regs.waiting == 0) {
+      if ((wd11_cpu_state.regs.intpending == 1) && (wd11_cpu_state.regs.PS.I2 == 1))
         perform_interrupt();
       execute_instruction();
-      if (regs.stepping == 1) {
-        regs.waiting = 1;
-        regs.stepping = 0;
+      if (wd11_cpu_state.regs.stepping == 1) {
+        wd11_cpu_state.regs.waiting = 1;
+        wd11_cpu_state.regs.stepping = 0;
       }
     } else
       usleep(500);
-  } while (regs.halting == 0);
+  } while (wd11_cpu_state.regs.halting == 0);
   pthread_exit(0);
 } /* end function cpu_thread */
 
@@ -324,6 +240,6 @@ void cpu_thread() {
 /* CPU stop                                                          */
 /*-------------------------------------------------------------------*/
 void cpu_stop() {
-  regs.halting = 1;
+  wd11_cpu_state.regs.halting = 1;
   pthread_join(cpu_t, NULL);
 }

@@ -27,10 +27,10 @@
 #include "cpu-fmt8.h"
 
 #define do_each(opc)                                                           \
-  if (regs.tracing)                                                            \
+  if (wd11_cpu_state->regs.tracing)                                                            \
     trace_fmt8(opc, sreg, dreg);
 
-void do_fmt_8() {
+void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
   int op8, sreg, dreg;
   uint16_t t16;
   uint8_t t8;
@@ -79,12 +79,12 @@ void do_fmt_8() {
     do {
       t16 = getAMwordBYmode(sreg, 1, 0);
       putAMwordBYmode(dreg, 1, 0, t16);
-      regs.gpr[sreg] += 2;
-      regs.gpr[dreg] += 2;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[sreg] += 2;
+      wd11_cpu_state->regs.gpr[dreg] += 2;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   case 2:
     //      MBWD            MOVE BLOCK OF WORDS DOWN
@@ -103,12 +103,12 @@ void do_fmt_8() {
     do {
       t16 = getAMwordBYmode(sreg, 1, 0);
       putAMwordBYmode(dreg, 1, 0, t16);
-      regs.gpr[sreg] -= 2;
-      regs.gpr[dreg] -= 2;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[sreg] -= 2;
+      wd11_cpu_state->regs.gpr[dreg] -= 2;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   case 3:
     //      MBBU            MOVE BLOCK OF BYTES UP
@@ -128,12 +128,12 @@ void do_fmt_8() {
     do {
       t8 = getAMbyteBYmode(sreg, 1, 0);
       putAMbyteBYmode(dreg, 1, 0, t8);
-      regs.gpr[sreg] += 1;
-      regs.gpr[dreg] += 1;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[sreg] += 1;
+      wd11_cpu_state->regs.gpr[dreg] += 1;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   case 4:
     //      MBBD            MOVE BLOCK OF BYTES DOWN
@@ -152,12 +152,12 @@ void do_fmt_8() {
     do {
       t8 = getAMbyteBYmode(sreg, 1, 0);
       putAMbyteBYmode(dreg, 1, 0, t8);
-      regs.gpr[sreg] -= 1;
-      regs.gpr[dreg] -= 1;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[sreg] -= 1;
+      wd11_cpu_state->regs.gpr[dreg] -= 1;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   case 5:
     //      MBWA            MOVE BLOCK OF WORDS TO ADDRESS
@@ -171,11 +171,11 @@ void do_fmt_8() {
     do {
       t16 = getAMwordBYmode(sreg, 1, 0);
       putAMwordBYmode(dreg, 1, 0, t16);
-      regs.gpr[sreg] += 2;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[sreg] += 2;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   case 6:
     //      MBBA            MOVE BLOCK OF BYTES TO ADDRESS
@@ -189,11 +189,11 @@ void do_fmt_8() {
     do {
       t8 = getAMbyteBYmode(sreg, 1, 0);
       putAMbyteBYmode(dreg, 1, 0, t8);
-      regs.gpr[sreg] += 1;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[sreg] += 1;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   case 7:
     //      MABW            MOVE ADDRESS TO BLOCK OF WORDS
@@ -208,11 +208,11 @@ void do_fmt_8() {
     do {
       t16 = getAMwordBYmode(sreg, 1, 0);
       putAMwordBYmode(dreg, 1, 0, t16);
-      regs.gpr[dreg] += 2;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[dreg] += 2;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   case 8:
     //      MABB            MOVE ADDRESS TO BLOCK OF BYTES
@@ -227,11 +227,11 @@ void do_fmt_8() {
     do {
       t8 = getAMbyteBYmode(sreg, 1, 0);
       putAMbyteBYmode(dreg, 1, 0, t8);
-      regs.gpr[dreg] += 1;
-      regs.gpr[0] -= 1;
-    } while ((regs.gpr[0] != 0) & !(regs.PS.I2 & regs.intpending));
-    if (regs.gpr[0] != 0)
-      regs.PC -= 2; // then do it again!
+      wd11_cpu_state->regs.gpr[dreg] += 1;
+      wd11_cpu_state->regs.gpr[0] -= 1;
+    } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
+    if (wd11_cpu_state->regs.gpr[0] != 0)
+      wd11_cpu_state->regs.PC -= 2; // then do it again!
     break;
   default:
     assert("invalid return from fmt_8 lookup...");

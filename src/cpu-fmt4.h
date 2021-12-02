@@ -34,7 +34,7 @@ extern "C"
 #endif
 
 
-void do_fmt_4(void);
+void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state);
 int svca_assist(int arg);
 int svcb_assist(int arg);
 int svcc_assist(int arg);

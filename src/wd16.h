@@ -145,7 +145,22 @@ typedef struct _REGS {                  /* Processor registers       */
 } REGS;
 
 
-void build_decode(void);
+typedef struct _wd11_cpu_state_t
+{
+  REGS regs;
+
+  uint16_t oldPCs[256];       /* table of prior PC's */
+  unsigned oldPCindex;        /* pointer to next entry in prior PC's table */
+  uint16_t op, opPC;          /* current opcode (base) and its location */
+  char cpu4_svcctxt[16];      /* my SVCCs starts LO and go up, or */
+                              /*          starts HI and go down.. */
+
+  pthread_mutex_t intlock_t;  /* interrupt lock */
+  pthread_t cpu_t;            /* cpu thread */
+} wd11_cpu_state_t;
+
+extern wd11_cpu_state_t wd11_cpu_state;
+
 void do_fmt_invalid(void);
 void execute_instruction(void);
 void perform_interrupt(void);
@@ -173,12 +188,10 @@ uint8_t getAMbyteBYmode(int regnum, int mode, int offset);
 void undAMbyteBYmode(int regnum, int mode);
 void putAMbyteBYmode(int regnum, int mode, int offset, uint8_t thebyte);
 
-
 /*-------------------------------------------------------------------*/
 /* misc                                                              */
 /*-------------------------------------------------------------------*/
 void config_memdump(uint16_t where, uint16_t fsize);
-
 
 #ifdef __cplusplus
 }

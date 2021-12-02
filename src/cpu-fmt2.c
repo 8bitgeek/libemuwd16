@@ -27,10 +27,10 @@
 #include "cpu-fmt2.h"
 
 #define do_each(opc)                                                           \
-  if (regs.tracing)                                                            \
+  if (wd11_cpu_state->regs.tracing)                                                            \
     trace_fmt2(opc, reg);
 
-void do_fmt_2() {
+void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
   int op2, reg;
   uint16_t tmp;
 
@@ -60,8 +60,8 @@ void do_fmt_2() {
     //
     do_each("IAC");
     // ??? interrrupt acknowledge ???
-    regs.gpr[reg] = 0;
-    regs.PS.I2 = 0;
+    wd11_cpu_state->regs.gpr[reg] = 0;
+    wd11_cpu_state->regs.PS.I2 = 0;
     break;
   case 3:
     //      RTN             RETURN FROM SUBROUTINE
@@ -76,9 +76,9 @@ void do_fmt_2() {
     //      INDICATORS:     Unchanged
     //
     do_each("RTN");
-    regs.PC = regs.gpr[reg];
-    getAMword((unsigned char *)&regs.gpr[reg], regs.SP);
-    regs.SP += 2;
+    wd11_cpu_state->regs.PC = wd11_cpu_state->regs.gpr[reg];
+    getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
+    wd11_cpu_state->regs.SP += 2;
     break;
   case 4:
     //      MSKO            MASK OUT
@@ -92,7 +92,7 @@ void do_fmt_2() {
     //      INDICTORS:      Unchanged
     //
     do_each("MSKO");
-    putAMword((unsigned char *)&regs.gpr[reg], 0x2E);
+    putAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], 0x2E);
     // ??? mask out ???
     break;
   case 5:
@@ -108,11 +108,11 @@ void do_fmt_2() {
     //      INDICATORS:     unchanged
     //
     do_each("PRTN");
-    getAMword((unsigned char *)&tmp, regs.SP);
-    regs.SP += 2 * tmp;
-    regs.PC = regs.gpr[reg];
-    getAMword((unsigned char *)&regs.gpr[reg], regs.SP);
-    regs.SP += 2;
+    getAMword((unsigned char *)&tmp, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->regs.SP += 2 * tmp;
+    wd11_cpu_state->regs.PC = wd11_cpu_state->regs.gpr[reg];
+    getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
+    wd11_cpu_state->regs.SP += 2;
     break;
   default:
     assert("cpu-fmt2.c - invalid return from fmt_2 lookup");

@@ -33,7 +33,7 @@ extern "C"
 {
 #endif
 
-void do_fmt_11(void);
+void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state);
 void trace_fmt11(char *opc, int sind, int sreg, double s, int dind, int dreg,
                  double d);
 

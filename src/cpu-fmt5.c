@@ -28,10 +28,10 @@
 #include "cpu-fmt5.h"
 
 #define do_each(opc)                                                           \
-  if (regs.tracing)                                                            \
+  if (wd11_cpu_state->regs.tracing)                                                            \
     trace_fmt5(opc, dest);
 
-void do_fmt_5() {
+void do_fmt_5(wd11_cpu_state_t* wd11_cpu_state) {
   int op5, dest;
 
   //      FORMAT 5 OP CODES
@@ -63,7 +63,7 @@ void do_fmt_5() {
     //                      is added to PC.
     //
     do_each("BR");
-    regs.PC = regs.PC + (dest * 2);
+    wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 2:
     //      BNE             BRANCH IF NOT EQUAL TO ZERO
@@ -72,8 +72,8 @@ void do_fmt_5() {
     //      OPERATION:      IF Z = 0, PC <- PC + (DISP *2)
     //
     do_each("BNE");
-    if (regs.PS.Z == 0)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.Z == 0)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 3:
     //      BEQ             BRANCH IF EQUAL TO ZERO
@@ -82,8 +82,8 @@ void do_fmt_5() {
     //      OPERATION:      IF Z = 1, PC <- PC + (DISP *2)
     //
     do_each("BEQ");
-    if (regs.PS.Z == 1)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.Z == 1)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 4:
     //      BGE             BRANCH IF GREATER THAN OR EQUAL TO ZERO
@@ -92,8 +92,8 @@ void do_fmt_5() {
     //      OPERATION:      IF N xor V = 0, PC <- PC + (DISP *2)
     //
     do_each("BGE");
-    if ((regs.PS.N ^ regs.PS.V) == 0)
-      regs.PC = regs.PC + (dest * 2);
+    if ((wd11_cpu_state->regs.PS.N ^ wd11_cpu_state->regs.PS.V) == 0)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 5:
     //      BLT             BRANCH IF LESS THAN ZERO
@@ -102,8 +102,8 @@ void do_fmt_5() {
     //      OPERATION:      IF N xor V = 1, PC <- PC + (DISP *2)
     //
     do_each("BLT");
-    if ((regs.PS.N ^ regs.PS.V) == 1)
-      regs.PC = regs.PC + (dest * 2);
+    if ((wd11_cpu_state->regs.PS.N ^ wd11_cpu_state->regs.PS.V) == 1)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 6:
     //      BGT             BRANCH IF GREATER THAN ZERO
@@ -112,8 +112,8 @@ void do_fmt_5() {
     //      OPERATION:      IF Z or (N xor V) = 0, PC <- PC + (DISP *2)
     //
     do_each("BGT");
-    if ((regs.PS.Z | (regs.PS.N ^ regs.PS.V)) == 0)
-      regs.PC = regs.PC + (dest * 2);
+    if ((wd11_cpu_state->regs.PS.Z | (wd11_cpu_state->regs.PS.N ^ wd11_cpu_state->regs.PS.V)) == 0)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 7:
     //      BLE             BRANCH IF LESS THAN or EQUAL TO ZERO
@@ -122,8 +122,8 @@ void do_fmt_5() {
     //      OPERATION:      IF Z or (N xor V) = 1, PC <- PC + (DISP *2)
     //
     do_each("BLE");
-    if ((regs.PS.Z | (regs.PS.N ^ regs.PS.V)) == 1)
-      regs.PC = regs.PC + (dest * 2);
+    if ((wd11_cpu_state->regs.PS.Z | (wd11_cpu_state->regs.PS.N ^ wd11_cpu_state->regs.PS.V)) == 1)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 128:
     //      BPL             BRANCH IF PLUS
@@ -132,8 +132,8 @@ void do_fmt_5() {
     //      OPERATION:      IF N = 0, PC <- PC + (DISP *2)
     //
     do_each("BPL");
-    if (regs.PS.N == 0)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.N == 0)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 129:
     //      BMI             BRANCH IF MINUS
@@ -142,8 +142,8 @@ void do_fmt_5() {
     //      OPERATION:      IF N = 1, PC <- PC + (DISP *2)
     //
     do_each("BMI");
-    if (regs.PS.N == 1)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.N == 1)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 130:
     //      BHI             BRANCH IF HIGHER
@@ -152,8 +152,8 @@ void do_fmt_5() {
     //      OPERATION:      IF C or Z = 0, PC <- PC + (DISP *2)
     //
     do_each("BHI");
-    if ((regs.PS.C | regs.PS.Z) == 0)
-      regs.PC = regs.PC + (dest * 2);
+    if ((wd11_cpu_state->regs.PS.C | wd11_cpu_state->regs.PS.Z) == 0)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 131:
     //      BLOS            BRANCH IF LOWER OR SAME
@@ -162,8 +162,8 @@ void do_fmt_5() {
     //      OPERATION:      IF C or Z = 1, PC <- PC + (DISP *2)
     //
     do_each("BLOS");
-    if ((regs.PS.C | regs.PS.Z) == 1)
-      regs.PC = regs.PC + (dest * 2);
+    if ((wd11_cpu_state->regs.PS.C | wd11_cpu_state->regs.PS.Z) == 1)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 132:
     //      BVC             BRANCH IF OVERFLOW CLEAR
@@ -172,8 +172,8 @@ void do_fmt_5() {
     //      OPERATION:      IF V = 0, PC <- PC + (DISP *2)
     //
     do_each("BVC");
-    if (regs.PS.V == 0)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.V == 0)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 133:
     //      BVS             BRANCH IF OVERFLOW SET
@@ -182,8 +182,8 @@ void do_fmt_5() {
     //      OPERATION:      IF V = 1, PC <- PC + (DISP *2)
     //
     do_each("BVS");
-    if (regs.PS.V == 1)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.V == 1)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 134:
     //      BCC             BRANCH IF CARRY CLEAR
@@ -194,8 +194,8 @@ void do_fmt_5() {
     //      OPERATION:      IF C = 0, PC <- PC + (DISP *2)
     //
     do_each("BCC");
-    if (regs.PS.C == 0)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.C == 0)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   case 135:
     //      BCS             BRANCH IF CARRY SET
@@ -206,8 +206,8 @@ void do_fmt_5() {
     //      OPERATION:      IF C = 1, PC <- PC + (DISP *2)
     //
     do_each("BCS");
-    if (regs.PS.C == 1)
-      regs.PC = regs.PC + (dest * 2);
+    if (wd11_cpu_state->regs.PS.C == 1)
+      wd11_cpu_state->regs.PC = wd11_cpu_state->regs.PC + (dest * 2);
     break;
   default:
     assert("cpu-fmt5.c - invalid return from fmt_5 lookup");

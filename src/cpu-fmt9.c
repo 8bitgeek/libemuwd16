@@ -27,7 +27,7 @@
 #include "cpu-fmt9.h"
 
 #define do_each(opc)                                                           \
-  if (regs.tracing) {                                                          \
+  if (wd11_cpu_state->regs.tracing) {                                                          \
     if (op9 == 0)                                                              \
       trace_fmt9_jsr(opc, sreg, dmode, dreg, n1word);                          \
     else if (op9 == 1)                                                         \
@@ -38,7 +38,7 @@
       trace_fmt9(opc, sreg, dmode, dreg, n1word);                              \
   }
 
-void do_fmt_9() {
+void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
   int op9, sreg, splus, dmode, dreg, doffset, i, count;
   uint16_t n1word, tmp, tmp2;
   uint32_t big;
@@ -64,15 +64,15 @@ void do_fmt_9() {
   //      0, C = 1.
   //
 
-  op9 = (op >> 9) & 7; /* 0-7 */
-  dreg = op & 7;
-  dmode = (op >> 3) & 7;
-  sreg = (op >> 6) & 7;
+  op9 = (wd11_cpu_state->op >> 9) & 7; /* 0-7 */
+  dreg = wd11_cpu_state->op & 7;
+  dmode = (wd11_cpu_state->op >> 3) & 7;
+  sreg = (wd11_cpu_state->op >> 6) & 7;
 
   if (op9 != 3)
     if (dmode > 5) {
-      getAMword((unsigned char *)&n1word, regs.PC);
-      regs.PC += 2;
+      getAMword((unsigned char *)&n1word, wd11_cpu_state->regs.PC);
+      wd11_cpu_state->regs.PC += 2;
     }
 
   switch (op9) {
@@ -92,19 +92,19 @@ void do_fmt_9() {
     //      INDICATORS:     Preset
     //
     do_each("JSR");
-    regs.PS.N = 1;
-    regs.PS.Z = 0;
-    regs.PS.V = 0;
-    regs.PS.C = 1;
+    wd11_cpu_state->regs.PS.N = 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    wd11_cpu_state->regs.PS.V = 0;
+    wd11_cpu_state->regs.PS.C = 1;
     if (dmode == 0) {
       do_fmt_invalid();
       break;
     }
     /* see app c */ tmp = getAMaddrBYmode(dreg, dmode, n1word);
-    regs.SP -= 2;
-    putAMword((unsigned char *)&regs.gpr[sreg], regs.SP);
-    regs.gpr[sreg] = regs.PC;
-    /* see app c */ regs.PC = tmp;
+    wd11_cpu_state->regs.SP -= 2;
+    putAMword((unsigned char *)&wd11_cpu_state->regs.gpr[sreg], wd11_cpu_state->regs.SP);
+    wd11_cpu_state->regs.gpr[sreg] = wd11_cpu_state->regs.PC;
+    /* see app c */ wd11_cpu_state->regs.PC = tmp;
     break;
   case 1:
     //      LEA             LOAD EFFECTIVE ADDRESS
@@ -118,15 +118,15 @@ void do_fmt_9() {
     //      INDICATORS:     Preset
     //
     do_each("LEA");
-    regs.PS.N = 1;
-    regs.PS.Z = 0;
-    regs.PS.V = 0;
-    regs.PS.C = 1;
+    wd11_cpu_state->regs.PS.N = 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    wd11_cpu_state->regs.PS.V = 0;
+    wd11_cpu_state->regs.PS.C = 1;
     if (dmode == 0) {
       do_fmt_invalid();
       break;
     }
-    regs.gpr[sreg] = getAMaddrBYmode(dreg, dmode, n1word);
+    wd11_cpu_state->regs.gpr[sreg] = getAMaddrBYmode(dreg, dmode, n1word);
     break;
   case 2:
     //      ASH             ABITHMETIC SHIFT
@@ -149,37 +149,37 @@ void do_fmt_9() {
     //                      REG
     //
     do_each("ASH");
-    regs.PS.N = 1;
-    regs.PS.Z = 0;
-    regs.PS.V = 0;
-    regs.PS.C = 1;
+    wd11_cpu_state->regs.PS.N = 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    wd11_cpu_state->regs.PS.V = 0;
+    wd11_cpu_state->regs.PS.C = 1;
     /* ??? */ tmp = getAMwordBYmode(dreg, dmode, n1word);
     tmp = tmp & 255;
     if (tmp > 128) // SSRA
     {
       for (i = 0, count = 256 - tmp; i < count; i++) {
-        tmp2 = (regs.gpr[sreg] >> 15) & 1;
-        regs.PS.C = regs.gpr[sreg] & 1;
-        regs.gpr[sreg] = regs.gpr[sreg] >> 1;
+        tmp2 = (wd11_cpu_state->regs.gpr[sreg] >> 15) & 1;
+        wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.gpr[sreg] & 1;
+        wd11_cpu_state->regs.gpr[sreg] = wd11_cpu_state->regs.gpr[sreg] >> 1;
         if (tmp2 == 1)
-          regs.gpr[sreg] |= 0x8000;
+          wd11_cpu_state->regs.gpr[sreg] |= 0x8000;
       }
-      regs.PS.N = (regs.gpr[sreg] >> 15) & 1;
-      regs.PS.Z = 0;
-      if (regs.gpr[sreg] == 0)
-        regs.PS.Z = 1;
-      regs.PS.V = regs.PS.C ^ regs.PS.N;
+      wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[sreg] >> 15) & 1;
+      wd11_cpu_state->regs.PS.Z = 0;
+      if (wd11_cpu_state->regs.gpr[sreg] == 0)
+        wd11_cpu_state->regs.PS.Z = 1;
+      wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
     } else if (tmp > 0) // SSLA
     {
       for (i = 0, count = tmp; i < count; i++) {
-        regs.PS.C = (regs.gpr[sreg] >> 15) & 1;
-        regs.gpr[sreg] = regs.gpr[sreg] << 1;
+        wd11_cpu_state->regs.PS.C = (wd11_cpu_state->regs.gpr[sreg] >> 15) & 1;
+        wd11_cpu_state->regs.gpr[sreg] = wd11_cpu_state->regs.gpr[sreg] << 1;
       }
-      regs.PS.N = (regs.gpr[sreg] >> 15) & 1;
-      regs.PS.Z = 0;
-      if (regs.gpr[sreg] == 0)
-        regs.PS.Z = 1;
-      regs.PS.V = regs.PS.C ^ regs.PS.N;
+      wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[sreg] >> 15) & 1;
+      wd11_cpu_state->regs.PS.Z = 0;
+      if (wd11_cpu_state->regs.gpr[sreg] == 0)
+        wd11_cpu_state->regs.PS.Z = 1;
+      wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
     }
     break;
   case 3:
@@ -194,21 +194,21 @@ void do_fmt_9() {
     //      INDICATORS:     Unchanged
     //
     do_each("SOB");
-    if (--regs.gpr[sreg] != 0) {
+    if (--wd11_cpu_state->regs.gpr[sreg] != 0) {
       doffset = ((dmode << 3) + dreg) << 1;
-      regs.PC -= doffset;
-      if (regs.PC == opPC)
-        if ((regs.PS.I2 == 1) && (regs.gpr[sreg] > 300)) { //
+      wd11_cpu_state->regs.PC -= doffset;
+      if (wd11_cpu_state->regs.PC == opPC)
+        if ((wd11_cpu_state->regs.PS.I2 == 1) && (wd11_cpu_state->regs.gpr[sreg] > 300)) { //
           // if this is an interrupt enabled branch to self
           // then cheat!  Wait a 1/100 a second and adjust
           // register to make him think he looped for it...
           //  ---- 4.5 monitor loop count is 400 ----
           //
           usleep(10000);
-          if (regs.gpr[sreg] <= 2000)
-            regs.gpr[sreg] = 1; // ~ 1500 for 2 mhz
+          if (wd11_cpu_state->regs.gpr[sreg] <= 2000)
+            wd11_cpu_state->regs.gpr[sreg] = 1; // ~ 1500 for 2 mhz
           else                  // ~ 2500 for 3.3 mhz
-            regs.gpr[sreg] -= 2000;
+            wd11_cpu_state->regs.gpr[sreg] -= 2000;
         }
     }
     break;
@@ -222,14 +222,14 @@ void do_fmt_9() {
     //      INDICATORS:     Preset
     //
     do_each("XCH");
-    regs.PS.N = 1;
-    regs.PS.Z = 0;
-    regs.PS.V = 0;
-    regs.PS.C = 1;
+    wd11_cpu_state->regs.PS.N = 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    wd11_cpu_state->regs.PS.V = 0;
+    wd11_cpu_state->regs.PS.C = 1;
     tmp = getAMwordBYmode(dreg, dmode, n1word);
     undAMwordBYmode(dreg, dmode);
-    putAMwordBYmode(dreg, dmode, n1word, regs.gpr[sreg]);
-    regs.gpr[sreg] = tmp;
+    putAMwordBYmode(dreg, dmode, n1word, wd11_cpu_state->regs.gpr[sreg]);
+    wd11_cpu_state->regs.gpr[sreg] = tmp;
     break;
   case 5:
     //      ASHC            ABITHMETIC SHIFT COMBINED
@@ -249,44 +249,44 @@ void do_fmt_9() {
     //   "TSTCC 10007     ;** V should not be set"
     //
     do_each("ASHC");
-    regs.PS.N = 1;
-    regs.PS.Z = 0;
-    regs.PS.V = 0;
-    regs.PS.C = 1;
+    wd11_cpu_state->regs.PS.N = 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    wd11_cpu_state->regs.PS.V = 0;
+    wd11_cpu_state->regs.PS.C = 1;
     splus = (sreg + 1) % 8;
     /* ??? */ tmp = getAMwordBYmode(dreg, dmode, n1word);
     tmp = tmp & 255;
     if (tmp > 128) // SSRA
     {
       for (i = 0, count = 256 - tmp; i < count; i++) {
-        regs.PS.C = regs.gpr[sreg] & 1;
-        regs.gpr[sreg] = regs.gpr[sreg] >> 1;
-        tmp2 = regs.gpr[splus] & 1;
+        wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.gpr[sreg] & 1;
+        wd11_cpu_state->regs.gpr[sreg] = wd11_cpu_state->regs.gpr[sreg] >> 1;
+        tmp2 = wd11_cpu_state->regs.gpr[splus] & 1;
         if (tmp2 == 1)
-          regs.gpr[sreg] |= 0x8000;
-        tmp2 = (regs.gpr[splus] >> 15) & 1;
-        regs.gpr[splus] = regs.gpr[splus] >> 1;
+          wd11_cpu_state->regs.gpr[sreg] |= 0x8000;
+        tmp2 = (wd11_cpu_state->regs.gpr[splus] >> 15) & 1;
+        wd11_cpu_state->regs.gpr[splus] = wd11_cpu_state->regs.gpr[splus] >> 1;
         if (tmp2 == 1)
-          regs.gpr[splus] |= 0x8000;
+          wd11_cpu_state->regs.gpr[splus] |= 0x8000;
       }
-      regs.PS.N = (regs.gpr[splus] >> 15) & 1;
-      regs.PS.Z = 0;
-      if ((regs.gpr[sreg] == 0) & (regs.gpr[splus] == 0))
-        regs.PS.Z = 1;
-      regs.PS.V = 0;
+      wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[splus] >> 15) & 1;
+      wd11_cpu_state->regs.PS.Z = 0;
+      if ((wd11_cpu_state->regs.gpr[sreg] == 0) & (wd11_cpu_state->regs.gpr[splus] == 0))
+        wd11_cpu_state->regs.PS.Z = 1;
+      wd11_cpu_state->regs.PS.V = 0;
     } else if (tmp > 0) // SSLA
     {
       for (i = 0, count = tmp; i < count; i++) {
-        regs.PS.C = (regs.gpr[splus] >> 15) & 1;
-        regs.gpr[splus] = regs.gpr[splus] << 1;
-        regs.gpr[splus] |= (regs.gpr[sreg] >> 15) & 1;
-        regs.gpr[sreg] = regs.gpr[sreg] << 1;
+        wd11_cpu_state->regs.PS.C = (wd11_cpu_state->regs.gpr[splus] >> 15) & 1;
+        wd11_cpu_state->regs.gpr[splus] = wd11_cpu_state->regs.gpr[splus] << 1;
+        wd11_cpu_state->regs.gpr[splus] |= (wd11_cpu_state->regs.gpr[sreg] >> 15) & 1;
+        wd11_cpu_state->regs.gpr[sreg] = wd11_cpu_state->regs.gpr[sreg] << 1;
       }
-      regs.PS.N = (regs.gpr[splus] >> 15) & 1;
-      regs.PS.Z = 0;
-      if ((regs.gpr[sreg] == 0) & (regs.gpr[splus] == 0))
-        regs.PS.Z = 1;
-      /* ???????? */ regs.PS.V = regs.PS.Z & regs.PS.C;
+      wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[splus] >> 15) & 1;
+      wd11_cpu_state->regs.PS.Z = 0;
+      if ((wd11_cpu_state->regs.gpr[sreg] == 0) & (wd11_cpu_state->regs.gpr[splus] == 0))
+        wd11_cpu_state->regs.PS.Z = 1;
+      /* ???????? */ wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.Z & wd11_cpu_state->regs.PS.C;
     }
     break;
   case 6:
@@ -303,19 +303,19 @@ void do_fmt_9() {
     //                      C = Indeterminate
     //
     do_each("MUL");
-    regs.PS.N = 1;
-    regs.PS.Z = 0;
-    regs.PS.V = 0;
-    regs.PS.C = 1;
+    wd11_cpu_state->regs.PS.N = 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    wd11_cpu_state->regs.PS.V = 0;
+    wd11_cpu_state->regs.PS.C = 1;
     splus = (sreg + 1) % 8;
     tmp = getAMwordBYmode(dreg, dmode, n1word);
-    big = tmp * regs.gpr[sreg];
-    regs.gpr[splus] = big >> 16;
-    regs.gpr[sreg] = big & 0xffff;
-    regs.PS.N = (regs.gpr[splus] >> 15) & 1;
-    regs.PS.Z = 0;
-    if ((regs.gpr[sreg] == 0) & (regs.gpr[splus] == 0))
-      regs.PS.Z = 1;
+    big = tmp * wd11_cpu_state->regs.gpr[sreg];
+    wd11_cpu_state->regs.gpr[splus] = big >> 16;
+    wd11_cpu_state->regs.gpr[sreg] = big & 0xffff;
+    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[splus] >> 15) & 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    if ((wd11_cpu_state->regs.gpr[sreg] == 0) & (wd11_cpu_state->regs.gpr[splus] == 0))
+      wd11_cpu_state->regs.PS.Z = 1;
     break;
   case 7:
     //      DIV             DIVIDE
@@ -343,31 +343,31 @@ void do_fmt_9() {
     //                      C = Set if (DST) = 0
     //
     do_each("DIV");
-    regs.PS.N = 1;
-    regs.PS.Z = 0;
-    regs.PS.V = 0;
-    regs.PS.C = 1;
+    wd11_cpu_state->regs.PS.N = 1;
+    wd11_cpu_state->regs.PS.Z = 0;
+    wd11_cpu_state->regs.PS.V = 0;
+    wd11_cpu_state->regs.PS.C = 1;
     splus = (sreg + 1) % 8;
     tmp = getAMwordBYmode(dreg, dmode, n1word);
     if (tmp == 0) // devide by zero...
     {
-      regs.PS.V = 1;
-      regs.PS.N = 0;
-      regs.PS.C = 1;
-    } else if (regs.gpr[splus] >= tmp) // overflow
+      wd11_cpu_state->regs.PS.V = 1;
+      wd11_cpu_state->regs.PS.N = 0;
+      wd11_cpu_state->regs.PS.C = 1;
+    } else if (wd11_cpu_state->regs.gpr[splus] >= tmp) // overflow
     {
-      regs.PS.V = 1;
-      regs.PS.N = 0;
-      regs.PS.C = 0;
+      wd11_cpu_state->regs.PS.V = 1;
+      wd11_cpu_state->regs.PS.N = 0;
+      wd11_cpu_state->regs.PS.C = 0;
     } else // do the devide...
     {
-      big = (regs.gpr[splus] << 16) + regs.gpr[sreg];
-      regs.gpr[sreg] = big / tmp;
-      regs.gpr[splus] = big % tmp;
-      regs.PS.N = (regs.gpr[sreg] >> 15) & 1;
-      regs.PS.Z = 0;
-      if (regs.gpr[sreg] == 0)
-        regs.PS.Z = 1;
+      big = (wd11_cpu_state->regs.gpr[splus] << 16) + wd11_cpu_state->regs.gpr[sreg];
+      wd11_cpu_state->regs.gpr[sreg] = big / tmp;
+      wd11_cpu_state->regs.gpr[splus] = big % tmp;
+      wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[sreg] >> 15) & 1;
+      wd11_cpu_state->regs.PS.Z = 0;
+      if (wd11_cpu_state->regs.gpr[sreg] == 0)
+        wd11_cpu_state->regs.PS.Z = 1;
     }
     break;
   default:
