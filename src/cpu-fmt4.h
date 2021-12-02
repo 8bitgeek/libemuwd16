@@ -35,9 +35,9 @@ extern "C"
 
 
 void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state);
-int svca_assist(int arg);
-int svcb_assist(int arg);
-int svcc_assist(int arg);
+int svca_assist(wd11_cpu_state_t* wd11_cpu_state,int arg);
+int svcb_assist(wd11_cpu_state_t* wd11_cpu_state,int arg);
+int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg);
 
 void trace_fmt4_svca(char *opc, int arg);
 void trace_fmt4_svcb(char *opc, int arg);

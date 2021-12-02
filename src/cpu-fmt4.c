@@ -50,8 +50,8 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
   //      word op codes with a 6 bit numeric argument.
   //
 
-  arg = op & 63;
-  op4 = op >> 6;
+  arg = wd11_cpu_state->op & 63;
+  op4 = wd11_cpu_state->op >> 6;
 
   switch (op4) {
   case 1:
@@ -73,7 +73,7 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("SVCA");
-    if (!svca_assist(arg)) {
+    if (!svca_assist(wd11_cpu_state,arg)) {
       wd11_cpu_state->regs.SP -= 2;
       putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
@@ -109,7 +109,7 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("SVCB");
-    if (!svcb_assist(arg)) {
+    if (!svcb_assist(wd11_cpu_state,arg)) {
       tmpa = wd11_cpu_state->regs.SP;
       wd11_cpu_state->regs.SP -= 2;
       putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
@@ -142,7 +142,7 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     //                       for SVCC instead of "24" as for SVCB.
     //
     do_each("SVCC");
-    if (!svcc_assist(arg)) {
+    if (!svcc_assist(wd11_cpu_state,arg)) {
       tmpa = wd11_cpu_state->regs.SP;
       wd11_cpu_state->regs.SP -= 2;
       putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
@@ -181,7 +181,7 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
 //             'false' if the AMOS monitor service routine is to be used
 //
 
-int svca_assist(int arg) {
+int svca_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
   if (arg == 9) { // turn off user trace on exit...
     if (wd11_cpu_state->regs.utrace) {
       getAMword((unsigned char *)&wd11_cpu_state->regs.utRX, 0x4E); // JOBCUR
@@ -194,11 +194,11 @@ int svca_assist(int arg) {
   return (false);
 }
 
-int svcb_assist(int arg) { return (false); }
+int svcb_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) { return (false); }
 
-int svcc_assist(int arg) {
+int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
 
-  if (cpu4_svcctxt[0] == 'h')
+  if (wd11_cpu_state->cpu4_svcctxt[0] == 'h')
     arg = 63 - arg;
 
   if (arg == 0) { // entry to virtual disk driver

@@ -27,7 +27,7 @@
 #include "cpu-fmt3.h"
 
 #define do_each(opc)                                                           \
-  if (regs.tracing)                                                            \
+  if (wd11_cpu_state->regs.tracing)                                                            \
     trace_fmt3(opc, arg);
 
 void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
@@ -42,8 +42,8 @@ void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
   //      argument.
   //
 
-  arg = op & 15;
-  op3 = op >> 4;
+  arg = wd11_cpu_state->op & 15;
+  op3 = wd11_cpu_state->op >> 4;
 
   switch (op3) {
   case 3:
@@ -58,10 +58,10 @@ void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = set per bit 0 of op code
     //
     do_each("LCC");
-    regs.PS.N = (arg >> 3) & 1;
-    regs.PS.Z = (arg >> 2) & 1;
-    regs.PS.V = (arg >> 1) & 1;
-    regs.PS.C = (arg >> 0) & 1;
+    wd11_cpu_state->regs.PS.N = (arg >> 3) & 1;
+    wd11_cpu_state->regs.PS.Z = (arg >> 2) & 1;
+    wd11_cpu_state->regs.PS.V = (arg >> 1) & 1;
+    wd11_cpu_state->regs.PS.C = (arg >> 0) & 1;
     break;
   default:
     assert("cpu-fmt3.c - invalid return from fmt_3 lookup");

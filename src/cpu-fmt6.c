@@ -51,10 +51,10 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
   //      the operand. If REG = PC then (REG+l) = R0.
   //
 
-  count = (op & 15) + 1;
-  op6a = (op & 63) >> 4;  /* 0, 1, 2, 3 */
-  reg = (op & 511) >> 6;
-  op6b = op >> 9;         /* 4, 68, 71 */
+  count = (wd11_cpu_state->op & 15) + 1;
+  op6a = (wd11_cpu_state->op & 63) >> 4;  /* 0, 1, 2, 3 */
+  reg = (wd11_cpu_state->op & 511) >> 6;
+  op6b = wd11_cpu_state->op >> 9;         /* 4, 68, 71 */
   if (op6b == 68)
     op6b--;               /* 4, 67, 71 */
   op6 = op6b + op6a;      /* 4,5,6,7; 67,68,69,70; 71,72,73,74 */

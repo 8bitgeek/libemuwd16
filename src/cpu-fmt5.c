@@ -48,10 +48,10 @@ void do_fmt_5(wd11_cpu_state_t* wd11_cpu_state) {
   //      branch range is +128, -127 words from the branch op code.
   //
 
-  dest = op & 255;
+  dest = wd11_cpu_state->op & 255;
   if (dest > 127)
     dest = dest - 256;
-  op5 = op >> 8;
+  op5 = wd11_cpu_state->op >> 8;
 
   switch (op5) {
   case 1:

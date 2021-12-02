@@ -279,11 +279,11 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
   //               instead of 0.
   //
 
-  op11 = (op >> 8) & 15; /* 0-15, but 5-15 invalid */
-  dreg = op & 7;
-  dind = (op >> 3) & 1;
-  sreg = (op >> 4) & 7;
-  sind = (op >> 7) & 1;
+  op11 = (wd11_cpu_state->op >> 8) & 15; /* 0-15, but 5-15 invalid */
+  dreg = wd11_cpu_state->op & 7;
+  dind = (wd11_cpu_state->op >> 3) & 1;
+  sreg = (wd11_cpu_state->op >> 4) & 7;
+  sind = (wd11_cpu_state->op >> 7) & 1;
 
   if (sind == 0)
     smode = 1;

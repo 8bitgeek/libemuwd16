@@ -61,11 +61,11 @@ void do_fmt_10(wd11_cpu_state_t* wd11_cpu_state) {
   //      totally independent.
   //
 
-  op10 = (op >> 12) & 15; /* 0-15, but 0,7,8,15 invalid */
-  dreg = op & 7;
-  dmode = (op >> 3) & 7;
-  sreg = (op >> 6) & 7;
-  smode = (op >> 9) & 7;
+  op10 = (wd11_cpu_state->op >> 12) & 15; /* 0-15, but 0,7,8,15 invalid */
+  dreg = wd11_cpu_state->op & 7;
+  dmode = (wd11_cpu_state->op >> 3) & 7;
+  sreg = (wd11_cpu_state->op >> 6) & 7;
+  smode = (wd11_cpu_state->op >> 9) & 7;
 
   if (smode > 5) {
     getAMword((unsigned char *)&n1word, wd11_cpu_state->regs.PC);

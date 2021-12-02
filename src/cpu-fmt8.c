@@ -57,9 +57,9 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
   //      op code is completed. This allows for complete interruptability
   //      as long as register integrity is maintained during the interrupt.
 
-  op8 = (op >> 6) - 55; /* 1-8 */
-  dreg = op & 7;
-  sreg = (op >> 3) & 7;
+  op8 = (wd11_cpu_state->op >> 6) - 55; /* 1-8 */
+  dreg = wd11_cpu_state->op & 7;
+  sreg = (wd11_cpu_state->op >> 3) & 7;
 
   switch (op8) {
   case 1:

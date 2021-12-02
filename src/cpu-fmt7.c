@@ -50,9 +50,9 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
   //      current op code + 4). Codes "8A00" to "8CC0" are BYTE ops.
   //
 
-  reg = (op & 7);
-  mode = (op & 63) >> 3;
-  op7 = op >> 6; /* 40-55, 552-567 */
+  reg = (wd11_cpu_state->op & 7);
+  mode = (wd11_cpu_state->op & 63) >> 3;
+  op7 = wd11_cpu_state->op >> 6; /* 40-55, 552-567 */
   if (op7 > 55)
     op7 = op7 - 496; /* 40-71 */
 

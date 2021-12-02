@@ -27,10 +27,10 @@
 #include "cpu-fmt1.h"
 
 #define do_each(opc)                                                           \
-  if (wd11_cpu_state->wd11_cpu_state->regs.tracing)                                                            \
+  if (wd11_cpu_state->regs.tracing)                                                            \
     trace_fmt1(opc, mask);
 
-void do_fmt_1(d11_cpu_state_t* wd11_cpu_state) {
+void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
   unsigned tmp;
   uint16_t mask, oldmask, newop;
 

@@ -106,7 +106,7 @@ void execute_instruction() {
   getAMword((unsigned char *)&wd11_cpu_state.op, wd11_cpu_state.regs.PC);
   wd11_cpu_state.regs.PC += 2;
 
-  fmt = instruction_type(op);
+  fmt = instruction_type(wd11_cpu_state.op);
   switch (fmt) {
   case 0:
     if (wd11_cpu_state.regs.tracing) // <<-- here instead of in do_fmt_invalid
@@ -169,7 +169,7 @@ void perform_interrupt() {
   if (wd11_cpu_state.regs.tracing)
     trace_Interrupt(i);
 
-  pthread_mutex_lock(&intlock_t);
+  pthread_mutex_lock(&wd11_cpu_state.intlock_t);
 
   switch (i) {
   case 0: // non-vectored
@@ -212,7 +212,7 @@ void perform_interrupt() {
     if (wd11_cpu_state.regs.whichint[i] == 1)
       wd11_cpu_state.regs.intpending = 1;
 
-  pthread_mutex_unlock(&intlock_t);
+  pthread_mutex_unlock(&wd11_cpu_state.intlock_t);
 
 } /* end function perform_interrupt */
 
@@ -241,5 +241,5 @@ void cpu_thread() {
 /*-------------------------------------------------------------------*/
 void cpu_stop() {
   wd11_cpu_state.regs.halting = 1;
-  pthread_join(cpu_t, NULL);
+  pthread_join(wd11_cpu_state.cpu_t, NULL);
 }

@@ -43,8 +43,8 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
   //      argument.
   //
 
-  reg = op & 7;
-  op2 = op >> 3;
+  reg = wd11_cpu_state->op & 7;
+  op2 = wd11_cpu_state->op >> 3;
 
   switch (op2) {
   case 2:

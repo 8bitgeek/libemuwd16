@@ -197,7 +197,7 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
     if (--wd11_cpu_state->regs.gpr[sreg] != 0) {
       doffset = ((dmode << 3) + dreg) << 1;
       wd11_cpu_state->regs.PC -= doffset;
-      if (wd11_cpu_state->regs.PC == opPC)
+      if (wd11_cpu_state->regs.PC == wd11_cpu_state->opPC)
         if ((wd11_cpu_state->regs.PS.I2 == 1) && (wd11_cpu_state->regs.gpr[sreg] > 300)) { //
           // if this is an interrupt enabled branch to self
           // then cheat!  Wait a 1/100 a second and adjust
