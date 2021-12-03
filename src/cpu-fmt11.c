@@ -138,10 +138,10 @@ int afp_put(
 /*-------------------------------------------------------------------*/
 #define FP_trap                                                                \
   wd11_cpu_state->regs.SP -= 2;                                                                \
-  putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);                               \
+  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);                               \
   wd11_cpu_state->regs.SP -= 2;                                                                \
-  putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);                               \
-  getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x3E);
+  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);                               \
+  wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x3E);
 
 /*-------------------------------------------------------------------*/
 /* Fmt 11 entry for floating point instructions          */
@@ -289,23 +289,23 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
     smode = 1;
   else
     smode = 7;
-  saddr = getAMaddrBYmode(sreg, smode, 0);
-  getAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
+  saddr = wd11_cpu_state->getAMaddrBYmode(sreg, smode, 0);
+  wd11_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
   if (op11 == 1) {
     afp_s.words.AFP_1.S = ~afp_s.words.AFP_1.S;
-    putAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
   }
-  getAMword((unsigned char *)&afp_s.words.AFP_2, saddr + 2);
-  getAMword((unsigned char *)&afp_s.words.AFP_3, saddr + 4);
+  wd11_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_2, saddr + 2);
+  wd11_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_3, saddr + 4);
   afp_get(&afp_s, &s);
   if (dind == 0)
     dmode = 1;
   else
     dmode = 7;
-  daddr = getAMaddrBYmode(dreg, dmode, 0);
-  getAMword((unsigned char *)&afp_d.words.AFP_1, daddr);
-  getAMword((unsigned char *)&afp_d.words.AFP_2, daddr + 2);
-  getAMword((unsigned char *)&afp_d.words.AFP_3, daddr + 4);
+  daddr = wd11_cpu_state->getAMaddrBYmode(dreg, dmode, 0);
+  wd11_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_1, daddr);
+  wd11_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_2, daddr + 2);
+  wd11_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_3, daddr + 4);
   afp_get(&afp_d, &d);
 
   switch (op11) {
@@ -352,9 +352,9 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
       FP_trap;
       break;
     }
-    putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
-    putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
-    putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
     if (oflg < 0) {
       wd11_cpu_state->regs.PS.N = wd11_cpu_state->regs.PS.V = 1;
       FP_trap;
@@ -388,9 +388,9 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
       FP_trap;
       break;
     }
-    putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
-    putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
-    putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
     if (oflg < 0) {
       wd11_cpu_state->regs.PS.N = wd11_cpu_state->regs.PS.V = 1;
       FP_trap;
@@ -430,9 +430,9 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
       FP_trap;
       break;
     }
-    putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
-    putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
-    putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
+    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
     if (oflg < 0) {
       wd11_cpu_state->regs.PS.N = wd11_cpu_state->regs.PS.V = 1;
       FP_trap;
@@ -475,10 +475,10 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
     break;
   } /* end switch(op11) */
 
-  putAMword((unsigned char *)&daddr, 0x30); // fill 'save area'...
-  putAMword((unsigned char *)&wd11_cpu_state->regs.SP, 0x32);
-  putAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x34);
-  putAMword((unsigned char *)&wd11_cpu_state->regs.R0, 0x36);
-  putAMword((unsigned char *)&saddr, 0x38); /* real doesn't def... */
+  wd11_cpu_state->putAMword((unsigned char *)&daddr, 0x30); // fill 'save area'...
+  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.SP, 0x32);
+  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x34);
+  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, 0x36);
+  wd11_cpu_state->putAMword((unsigned char *)&saddr, 0x38); /* real doesn't def... */
 
 } /* end function do_fmt_11 */

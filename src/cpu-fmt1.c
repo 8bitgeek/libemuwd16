@@ -138,21 +138,21 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("XCT");
     tmp = wd11_cpu_state->regs.PS.I2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
 
-    getAMword((unsigned char *)&newop, wd11_cpu_state->regs.PC);
+    wd11_cpu_state->getAMword((unsigned char *)&newop, wd11_cpu_state->regs.PC);
     if ((newop > 3) && (newop < 8)) /* HALT, XCT, BPT, or WFI */
                                     /* ???? */
     {
       wd11_cpu_state->regs.PC += 2; /* and stacked PS should be smashed too */
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
-      getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x1E);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x1E);
       wd11_cpu_state->regs.PS.I2 = 0;
     } else { /* execute_instruction will refetch op */
       wd11_cpu_state->regs.PS.I2 = tmp;
@@ -160,10 +160,10 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
       execute_instruction();
       wd11_cpu_state->regs.trace = 0;
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
-      getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x20);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x20);
     }
     break;
   case 6:
@@ -179,10 +179,10 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("BPT");
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x2C);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x2C);
     break;
   case 7:
     //      WFI             WAIT FOR INTERRUPT
@@ -215,22 +215,22 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Set per PS bits 0 - 3
     //
     do_each("RSVC");
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   case 9:
@@ -244,21 +244,21 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Set per PS bits 0 - 3
     //
     do_each("RRTT");
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   case 10:
@@ -276,17 +276,17 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SAVE");
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
     break;
   case 11:
     //      SAVS            SAVE STATUS
@@ -305,26 +305,26 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //                      set.
     //      INDICATORS:     Unchanged
     //
-    getAMword((unsigned char *)&mask, wd11_cpu_state->regs.PC);
+    wd11_cpu_state->getAMword((unsigned char *)&mask, wd11_cpu_state->regs.PC);
     wd11_cpu_state->regs.PC += 2;
     do_each("SAVS"); /* done here so 'mask' avail */
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
-    getAMword((unsigned char *)&oldmask, 0x2E);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&oldmask, 0x2E);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&oldmask, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&oldmask, wd11_cpu_state->regs.SP);
     oldmask = mask | oldmask;
-    putAMword((unsigned char *)&oldmask, 0x2E);
+    wd11_cpu_state->putAMword((unsigned char *)&oldmask, 0x2E);
     // --------------   mask0?
     wd11_cpu_state->regs.PS.I2 = 1;
     break;
@@ -342,17 +342,17 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("REST");
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   case 13:
@@ -366,19 +366,19 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("RRTN");
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   case 14:
@@ -396,25 +396,25 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Set per PS bits 0 - 3
     //
     do_each("RSTS");
-    getAMword((unsigned char *)&mask, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&mask, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    putAMword((unsigned char *)&mask, 0x2E);
+    wd11_cpu_state->putAMword((unsigned char *)&mask, 0x2E);
     // --------------   mask0?
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   case 15:
@@ -430,9 +430,9 @@ void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set per PS bit 0
     //
     do_each("RTT");
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
-    getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   default:

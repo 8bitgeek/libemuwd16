@@ -79,16 +79,16 @@ void do_fmt_invalid() {
   // --- opcode is greater than F000 (fmt 11) when it will load from "1A".
   //
   wd11_cpu_state.regs.SP -= 2;
-  putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
+  wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
   wd11_cpu_state.regs.SP -= 2;
-  putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
+  wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
   wd11_cpu_state.regs.waiting = 0;
   wd11_cpu_state.regs.trace = 0;
   wd11_cpu_state.regs.PS.I2 = 0;
   if (wd11_cpu_state.op > 0xf000)
-    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1A);
+    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1A);
   else
-    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1C);
+    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1C);
 
 } /* end function do_fmt_invalid */
 
@@ -103,7 +103,7 @@ void execute_instruction() {
   wd11_cpu_state.oldPCindex = (wd11_cpu_state.oldPCindex + 1) % 256;
   wd11_cpu_state.oldPCs[wd11_cpu_state.oldPCindex] = wd11_cpu_state.opPC = wd11_cpu_state.regs.PC;
 
-  getAMword((unsigned char *)&wd11_cpu_state.op, wd11_cpu_state.regs.PC);
+  wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.op, wd11_cpu_state.regs.PC);
   wd11_cpu_state.regs.PC += 2;
 
   fmt = instruction_type(wd11_cpu_state.op);
@@ -174,13 +174,13 @@ void perform_interrupt() {
   switch (i) {
   case 0: // non-vectored
     wd11_cpu_state.regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
     wd11_cpu_state.regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
     wd11_cpu_state.regs.waiting = 0;
     wd11_cpu_state.regs.trace = 0;
     wd11_cpu_state.regs.PS.I2 = 0;
-    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x2A); // non-power-fail
+    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x2A); // non-power-fail
     wd11_cpu_state.regs.whichint[i] = 0;
     break;
   case 1:
@@ -192,15 +192,15 @@ void perform_interrupt() {
   case 7:
   case 8:
     wd11_cpu_state.regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
     wd11_cpu_state.regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
+    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
     wd11_cpu_state.regs.waiting = 0;
     wd11_cpu_state.regs.trace = 0;
     wd11_cpu_state.regs.PS.I2 = 0;
-    getAMword((unsigned char *)&tmp, 050);
+    wd11_cpu_state.getAMword((unsigned char *)&tmp, 050);
     tmp += (016 - 2 * i);
-    getAMword((unsigned char *)&wd11_cpu_state.regs.PC, tmp);
+    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, tmp);
     wd11_cpu_state.regs.PC += tmp;
     wd11_cpu_state.regs.whichint[i] = 0;
     break;

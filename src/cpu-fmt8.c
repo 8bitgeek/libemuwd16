@@ -77,8 +77,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MBWU");
     do {
-      t16 = getAMwordBYmode(sreg, 1, 0);
-      putAMwordBYmode(dreg, 1, 0, t16);
+      t16 = wd11_cpu_state->getAMwordBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMwordBYmode(dreg, 1, 0, t16);
       wd11_cpu_state->regs.gpr[sreg] += 2;
       wd11_cpu_state->regs.gpr[dreg] += 2;
       wd11_cpu_state->regs.gpr[0] -= 1;
@@ -101,8 +101,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MBWD");
     do {
-      t16 = getAMwordBYmode(sreg, 1, 0);
-      putAMwordBYmode(dreg, 1, 0, t16);
+      t16 = wd11_cpu_state->getAMwordBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMwordBYmode(dreg, 1, 0, t16);
       wd11_cpu_state->regs.gpr[sreg] -= 2;
       wd11_cpu_state->regs.gpr[dreg] -= 2;
       wd11_cpu_state->regs.gpr[0] -= 1;
@@ -126,8 +126,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MBBU");
     do {
-      t8 = getAMbyteBYmode(sreg, 1, 0);
-      putAMbyteBYmode(dreg, 1, 0, t8);
+      t8 = wd11_cpu_state->getAMbyteBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMbyteBYmode(dreg, 1, 0, t8);
       wd11_cpu_state->regs.gpr[sreg] += 1;
       wd11_cpu_state->regs.gpr[dreg] += 1;
       wd11_cpu_state->regs.gpr[0] -= 1;
@@ -150,8 +150,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MBBD");
     do {
-      t8 = getAMbyteBYmode(sreg, 1, 0);
-      putAMbyteBYmode(dreg, 1, 0, t8);
+      t8 = wd11_cpu_state->getAMbyteBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMbyteBYmode(dreg, 1, 0, t8);
       wd11_cpu_state->regs.gpr[sreg] -= 1;
       wd11_cpu_state->regs.gpr[dreg] -= 1;
       wd11_cpu_state->regs.gpr[0] -= 1;
@@ -169,8 +169,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MBWA");
     do {
-      t16 = getAMwordBYmode(sreg, 1, 0);
-      putAMwordBYmode(dreg, 1, 0, t16);
+      t16 = wd11_cpu_state->getAMwordBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMwordBYmode(dreg, 1, 0, t16);
       wd11_cpu_state->regs.gpr[sreg] += 2;
       wd11_cpu_state->regs.gpr[0] -= 1;
     } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
@@ -187,8 +187,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MBBA");
     do {
-      t8 = getAMbyteBYmode(sreg, 1, 0);
-      putAMbyteBYmode(dreg, 1, 0, t8);
+      t8 = wd11_cpu_state->getAMbyteBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMbyteBYmode(dreg, 1, 0, t8);
       wd11_cpu_state->regs.gpr[sreg] += 1;
       wd11_cpu_state->regs.gpr[0] -= 1;
     } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
@@ -206,8 +206,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MABW");
     do {
-      t16 = getAMwordBYmode(sreg, 1, 0);
-      putAMwordBYmode(dreg, 1, 0, t16);
+      t16 = wd11_cpu_state->getAMwordBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMwordBYmode(dreg, 1, 0, t16);
       wd11_cpu_state->regs.gpr[dreg] += 2;
       wd11_cpu_state->regs.gpr[0] -= 1;
     } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));
@@ -225,8 +225,8 @@ void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("MABB");
     do {
-      t8 = getAMbyteBYmode(sreg, 1, 0);
-      putAMbyteBYmode(dreg, 1, 0, t8);
+      t8 = wd11_cpu_state->getAMbyteBYmode(sreg, 1, 0);
+      wd11_cpu_state->putAMbyteBYmode(dreg, 1, 0, t8);
       wd11_cpu_state->regs.gpr[dreg] += 1;
       wd11_cpu_state->regs.gpr[0] -= 1;
     } while ((wd11_cpu_state->regs.gpr[0] != 0) & !(wd11_cpu_state->regs.PS.I2 & wd11_cpu_state->regs.intpending));

@@ -77,7 +77,7 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("RTN");
     wd11_cpu_state->regs.PC = wd11_cpu_state->regs.gpr[reg];
-    getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   case 4:
@@ -92,7 +92,7 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICTORS:      Unchanged
     //
     do_each("MSKO");
-    putAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], 0x2E);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], 0x2E);
     // ??? mask out ???
     break;
   case 5:
@@ -108,10 +108,10 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     unchanged
     //
     do_each("PRTN");
-    getAMword((unsigned char *)&tmp, wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&tmp, wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2 * tmp;
     wd11_cpu_state->regs.PC = wd11_cpu_state->regs.gpr[reg];
-    getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.SP += 2;
     break;
   default:

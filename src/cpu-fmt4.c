@@ -75,12 +75,12 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     do_each("SVCA");
     if (!svca_assist(wd11_cpu_state,arg)) {
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
-      getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x22);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x22);
       wd11_cpu_state->regs.PC += arg * 2;
-      getAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.PC);
+      wd11_cpu_state->getAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.PC);
       wd11_cpu_state->regs.PC += tmpa;
     }
     break;
@@ -112,27 +112,27 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     if (!svcb_assist(wd11_cpu_state,arg)) {
       tmpa = wd11_cpu_state->regs.SP;
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
       tmpb = wd11_cpu_state->regs.SP;
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.R1 = tmpb;
       wd11_cpu_state->regs.R5 = arg * 2;
-      getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x24);
+      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x24);
     }
     break;
   case 3:
@@ -145,27 +145,27 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     if (!svcc_assist(wd11_cpu_state,arg)) {
       tmpa = wd11_cpu_state->regs.SP;
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
       tmpb = wd11_cpu_state->regs.SP;
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.SP -= 2;
-      putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
+      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
       wd11_cpu_state->regs.R1 = tmpb;
       wd11_cpu_state->regs.R5 = arg * 2;
-      getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x26);
+      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x26);
     }
     break;
   default:
@@ -184,7 +184,7 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
 int svca_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
   if (arg == 9) { // turn off user trace on exit...
     if (wd11_cpu_state->regs.utrace) {
-      getAMword((unsigned char *)&wd11_cpu_state->regs.utRX, 0x4E); // JOBCUR
+      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.utRX, 0x4E); // JOBCUR
       if (wd11_cpu_state->regs.utR0 == wd11_cpu_state->regs.utRX) {
         wd11_cpu_state->regs.tracing = false;
         wd11_cpu_state->regs.utrace = false;
@@ -216,8 +216,8 @@ int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
   }
   if (arg == 4) { // turn user tracing on
     if (!wd11_cpu_state->regs.utrace)
-      getAMword((unsigned char *)&wd11_cpu_state->regs.utR0, 0x4E); // JOBCUR
-    getAMword((unsigned char *)&wd11_cpu_state->regs.utPC, 0x46);   // MEMBAS
+      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.utR0, 0x4E); // JOBCUR
+    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.utPC, 0x46);   // MEMBAS
     wd11_cpu_state->regs.utrace = true;
     wd11_cpu_state->regs.tracing = true;
     wd11_cpu_state->regs.R0 = wd11_cpu_state->regs.utR0;
@@ -239,23 +239,23 @@ int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
   }
   if (arg == 7) { // snap JOBBAS thru JOBSIZ to trace
     uint16_t LINK, R0, SIZE;
-    getAMword((unsigned char *)&R0, 0x4E);      // JOBCUR
-    getAMword((unsigned char *)&LINK, R0 + 12); // JOBBAS
-    getAMword((unsigned char *)&SIZE, R0 + 14); // JOBSIZ
+    wd11_cpu_state->getAMword((unsigned char *)&R0, 0x4E);      // JOBCUR
+    wd11_cpu_state->getAMword((unsigned char *)&LINK, R0 + 12); // JOBBAS
+    wd11_cpu_state->getAMword((unsigned char *)&SIZE, R0 + 14); // JOBSIZ
     fprintf(stderr, "\n\r<><>SVCC 7 memory dump<><>\n\r");
     config_memdump(LINK, SIZE);
     return (true);
   }
   // if (arg == 8) { // special snap of particular memory block to trace
   //      uint16_t LINK, R0, SIZE;
-  //      getAMword((unsigned char *)&R0,   0x4E);  // JOBCUR
-  //      getAMword((unsigned char *)&LINK, R0+12); // JOBBAS
+  //      wd11_cpu_state->getAMword((unsigned char *)&R0,   0x4E);  // JOBCUR
+  //      wd11_cpu_state->getAMword((unsigned char *)&LINK, R0+12); // JOBBAS
   //      fprintf(stderr,"\n\r<><>SVCC 8 memory dump<><>\n\r");
-  //        getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; // s.b.
-  //        link=464e getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; //
-  //        s.b. link=4858 getAMword((unsigned char *)&SIZE, LINK); LINK +=
-  //        SIZE; // s.b. link=4a62 getAMword((unsigned char *)&SIZE, LINK);
-  //        LINK += SIZE; // s.b. link=4c6c getAMword((unsigned char *)&SIZE,
+  //        wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; // s.b.
+  //        link=464e wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; //
+  //        s.b. link=4858 wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK +=
+  //        SIZE; // s.b. link=4a62 wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK);
+  //        LINK += SIZE; // s.b. link=4c6c wd11_cpu_state->getAMword((unsigned char *)&SIZE,
   //        LINK); // s.b. LINK= 4c6c, SIZE = 20e
   //      config_memdump(LINK, SIZE);
   //      return(true);

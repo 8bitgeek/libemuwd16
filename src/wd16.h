@@ -144,6 +144,37 @@ typedef struct _REGS {                  /* Processor registers       */
 
 } REGS;
 
+/*-------------------------------------------------------------------*/
+/* memory accesss callback typedefs                                  */
+/*-------------------------------------------------------------------*/
+
+// void getAMbyte(unsigned char *chr, long address);
+// void putAMbyte(unsigned char *chr, long address);
+typedef void (*get_put_byte_callback_t)(unsigned char *chr, long address);
+typedef void (*get_put_word_callback_t)(unsigned char *chr, long address);
+
+// void getAMword(unsigned char *chr, long address);
+// void putAMword(unsigned char *chr, long address);
+typedef void (*get_put_byte_callback_t)(unsigned char *chr, long address);
+typedef void (*get_put_word_callback_t)(unsigned char *chr, long address);
+
+// uint16_t  getAMaddrBYmode(int regnum, int mode, int offset);
+// uint16_t  getAMwordBYmode(int regnum, int mode, int offset);
+typedef uint16_t (*get_put_word_by_mode_callback_t)(int regnum, int mode, int offset);
+
+// uint8_t   getAMbyteBYmode(int regnum, int mode, int offset);
+typedef uint8_t (*get_byte_by_mode_callback_t)(int regnum, int mode, int offset);
+
+// void    undAMwordBYmode(int regnum, int mode);
+// void    undAMbyteBYmode(int regnum, int mode);
+typedef void (*und_by_mode_callback_t)(int regnum, int mode);
+
+// void    putAMwordBYmode(int regnum, int mode, int offset, uint16_t theword);
+typedef void (*put_word_by_mode_callback_t)(int regnum, int mode, int offset, uint16_t theword);
+
+// void    putAMbyteBYmode(int regnum, int mode, int offset, uint8_t thebyte);
+typedef void (*put_byte_by_mode_callback_t)(int regnum, int mode, int offset, uint8_t thebyte);
+
 
 typedef struct _wd11_cpu_state_t
 {
@@ -157,6 +188,24 @@ typedef struct _wd11_cpu_state_t
 
   pthread_mutex_t intlock_t;  /* interrupt lock */
   pthread_t cpu_t;            /* cpu thread */
+
+  get_put_byte_callback_t         getAMbyte;
+  get_put_byte_callback_t         putAMbyte;
+
+  get_put_word_callback_t         getAMword;
+  get_put_word_callback_t         putAMword;
+
+  get_put_word_by_mode_callback_t getAMaddrBYmode;
+  get_put_word_by_mode_callback_t getAMwordBYmode;
+
+  get_byte_by_mode_callback_t     getAMbyteBYmode;
+
+  und_by_mode_callback_t          undAMwordBYmode;
+  und_by_mode_callback_t          undAMbyteBYmode;
+
+  put_word_by_mode_callback_t     putAMwordBYmode;
+  put_byte_by_mode_callback_t     putAMbyteBYmode;
+
 } wd11_cpu_state_t;
 
 extern wd11_cpu_state_t wd11_cpu_state;
@@ -173,20 +222,6 @@ void cpu_stop(void);
 void trace_Interrupt(int i);
 void trace_fmtInvalid(void);
 
-/*-------------------------------------------------------------------*/
-/* memory                                                            */
-/*-------------------------------------------------------------------*/
-void getAMbyte(unsigned char *chr, long address);
-void getAMword(unsigned char *chr, long address);
-void putAMbyte(unsigned char *chr, long address);
-void putAMword(unsigned char *chr, long address);
-uint16_t getAMaddrBYmode(int regnum, int mode, int offset);
-uint16_t getAMwordBYmode(int regnum, int mode, int offset);
-void undAMwordBYmode(int regnum, int mode);
-void putAMwordBYmode(int regnum, int mode, int offset, uint16_t theword);
-uint8_t getAMbyteBYmode(int regnum, int mode, int offset);
-void undAMbyteBYmode(int regnum, int mode);
-void putAMbyteBYmode(int regnum, int mode, int offset, uint8_t thebyte);
 
 /*-------------------------------------------------------------------*/
 /* misc                                                              */

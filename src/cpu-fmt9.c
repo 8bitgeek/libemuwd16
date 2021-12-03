@@ -71,7 +71,7 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
 
   if (op9 != 3)
     if (dmode > 5) {
-      getAMword((unsigned char *)&n1word, wd11_cpu_state->regs.PC);
+      wd11_cpu_state->getAMword((unsigned char *)&n1word, wd11_cpu_state->regs.PC);
       wd11_cpu_state->regs.PC += 2;
     }
 
@@ -100,9 +100,9 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
       do_fmt_invalid();
       break;
     }
-    /* see app c */ tmp = getAMaddrBYmode(dreg, dmode, n1word);
+    /* see app c */ tmp = wd11_cpu_state->getAMaddrBYmode(dreg, dmode, n1word);
     wd11_cpu_state->regs.SP -= 2;
-    putAMword((unsigned char *)&wd11_cpu_state->regs.gpr[sreg], wd11_cpu_state->regs.SP);
+    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.gpr[sreg], wd11_cpu_state->regs.SP);
     wd11_cpu_state->regs.gpr[sreg] = wd11_cpu_state->regs.PC;
     /* see app c */ wd11_cpu_state->regs.PC = tmp;
     break;
@@ -126,7 +126,7 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
       do_fmt_invalid();
       break;
     }
-    wd11_cpu_state->regs.gpr[sreg] = getAMaddrBYmode(dreg, dmode, n1word);
+    wd11_cpu_state->regs.gpr[sreg] = wd11_cpu_state->getAMaddrBYmode(dreg, dmode, n1word);
     break;
   case 2:
     //      ASH             ABITHMETIC SHIFT
@@ -153,7 +153,7 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
     wd11_cpu_state->regs.PS.Z = 0;
     wd11_cpu_state->regs.PS.V = 0;
     wd11_cpu_state->regs.PS.C = 1;
-    /* ??? */ tmp = getAMwordBYmode(dreg, dmode, n1word);
+    /* ??? */ tmp = wd11_cpu_state->getAMwordBYmode(dreg, dmode, n1word);
     tmp = tmp & 255;
     if (tmp > 128) // SSRA
     {
@@ -226,9 +226,9 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
     wd11_cpu_state->regs.PS.Z = 0;
     wd11_cpu_state->regs.PS.V = 0;
     wd11_cpu_state->regs.PS.C = 1;
-    tmp = getAMwordBYmode(dreg, dmode, n1word);
-    undAMwordBYmode(dreg, dmode);
-    putAMwordBYmode(dreg, dmode, n1word, wd11_cpu_state->regs.gpr[sreg]);
+    tmp = wd11_cpu_state->getAMwordBYmode(dreg, dmode, n1word);
+    wd11_cpu_state->undAMwordBYmode(dreg, dmode);
+    wd11_cpu_state->putAMwordBYmode(dreg, dmode, n1word, wd11_cpu_state->regs.gpr[sreg]);
     wd11_cpu_state->regs.gpr[sreg] = tmp;
     break;
   case 5:
@@ -254,7 +254,7 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
     wd11_cpu_state->regs.PS.V = 0;
     wd11_cpu_state->regs.PS.C = 1;
     splus = (sreg + 1) % 8;
-    /* ??? */ tmp = getAMwordBYmode(dreg, dmode, n1word);
+    /* ??? */ tmp = wd11_cpu_state->getAMwordBYmode(dreg, dmode, n1word);
     tmp = tmp & 255;
     if (tmp > 128) // SSRA
     {
@@ -308,7 +308,7 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
     wd11_cpu_state->regs.PS.V = 0;
     wd11_cpu_state->regs.PS.C = 1;
     splus = (sreg + 1) % 8;
-    tmp = getAMwordBYmode(dreg, dmode, n1word);
+    tmp = wd11_cpu_state->getAMwordBYmode(dreg, dmode, n1word);
     big = tmp * wd11_cpu_state->regs.gpr[sreg];
     wd11_cpu_state->regs.gpr[splus] = big >> 16;
     wd11_cpu_state->regs.gpr[sreg] = big & 0xffff;
@@ -348,7 +348,7 @@ void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {
     wd11_cpu_state->regs.PS.V = 0;
     wd11_cpu_state->regs.PS.C = 1;
     splus = (sreg + 1) % 8;
-    tmp = getAMwordBYmode(dreg, dmode, n1word);
+    tmp = wd11_cpu_state->getAMwordBYmode(dreg, dmode, n1word);
     if (tmp == 0) // devide by zero...
     {
       wd11_cpu_state->regs.PS.V = 1;
