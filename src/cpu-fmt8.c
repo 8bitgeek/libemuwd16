@@ -28,7 +28,7 @@
 
 #define do_each(opc)                                                           \
   if (wd11_cpu_state->regs.tracing)                                                            \
-    trace_fmt8(opc, sreg, dreg);
+    wd11_cpu_state->trace_fmt8(opc, sreg, dreg);
 
 void do_fmt_8(wd11_cpu_state_t* wd11_cpu_state) {
   int op8, sreg, dreg;

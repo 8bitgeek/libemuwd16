@@ -165,16 +165,51 @@ typedef uint16_t (*get_put_word_by_mode_callback_t)(int regnum, int mode, int of
 // uint8_t   getAMbyteBYmode(int regnum, int mode, int offset);
 typedef uint8_t (*get_byte_by_mode_callback_t)(int regnum, int mode, int offset);
 
-// void    undAMwordBYmode(int regnum, int mode);
-// void    undAMbyteBYmode(int regnum, int mode);
+// void   undAMwordBYmode(int regnum, int mode);
+// void   undAMbyteBYmode(int regnum, int mode);
 typedef void (*und_by_mode_callback_t)(int regnum, int mode);
 
-// void    putAMwordBYmode(int regnum, int mode, int offset, uint16_t theword);
+// void   putAMwordBYmode(int regnum, int mode, int offset, uint16_t theword);
 typedef void (*put_word_by_mode_callback_t)(int regnum, int mode, int offset, uint16_t theword);
 
-// void    putAMbyteBYmode(int regnum, int mode, int offset, uint8_t thebyte);
+// void   putAMbyteBYmode(int regnum, int mode, int offset, uint8_t thebyte);
 typedef void (*put_byte_by_mode_callback_t)(int regnum, int mode, int offset, uint8_t thebyte);
 
+// void   trace_fmt1(char *opc, int mask);
+// void   trace_fmt2(char *opc, int reg);
+// void   trace_fmt3(char *opc, int arg);
+// void   trace_fmt4_svca(char *opc, int arg);
+// void   trace_fmt4_svcb(char *opc, int arg);
+// void   trace_fmt4_svcc(char *opc, int arg);
+// void   trace_fmt5(char *opc, int dest);
+typedef void (*trace_fmt_A_callback_t)(char *opc, int mask);
+
+// void   trace_fmt6(char *opc, int count, int reg);
+// void   trace_fmt8(char *opc, int sreg, int dreg);
+typedef void (*trace_fmt_B_callback_t)(char *opc, int count, int reg);
+
+// void   trace_fmt7(char *opc, int dmode, int dreg, uint16_t n1word);
+typedef void (*trace_fmt_C_callback_t)(char *opc, int dmode, int dreg, uint16_t n1word);
+
+// void   trace_fmt9(char *opc, int sreg, int dmode, int dreg, uint16_t n1word);
+// void   trace_fmt9_jsr(char *opc, int sreg, int dmode, int dreg, uint16_t n1word);
+// void   trace_fmt9_lea(char *opc, int sreg, int dmode, int dreg, uint16_t n1word);
+typedef void (*trace_fmt_D_callback_t)(char *opc, int sreg, int dmode, int dreg, uint16_t n1word);
+
+// void   trace_fmt9_sob(char *opc, int sreg, int dmode, int dreg);
+typedef void (*trace_fmt_E_callback_t)(char *opc, int sreg, int dmode, int dreg);
+
+// void   trace_fmt10(char *opc, int smode, int sreg, int dmode, int dreg, uint16_t n1word);
+typedef void (*trace_fmt_F_callback_t)(char *opc, int smode, int sreg, int dmode, int dreg, uint16_t n1word);
+
+// void   trace_fmt11(char *opc, int sind, int sreg, double s, int dind, int dreg, double d);
+typedef void (*trace_fmt_G_callback_t)(char *opc, int sind, int sreg, double s, int dind, int dreg, double d);
+
+// void   trace_Interrupt(int i);
+typedef void (*trace_fmt_H_callback_t)(int i);
+
+// void   trace_fmtInvalid(void);
+typedef void (*trace_fmt_I_callback_t)(void);
 
 typedef struct _wd11_cpu_state_t
 {
@@ -189,20 +224,38 @@ typedef struct _wd11_cpu_state_t
   pthread_mutex_t intlock_t;  /* interrupt lock */
   pthread_t cpu_t;            /* cpu thread */
 
+  /* trace callbacks */
+
+  trace_fmt_A_callback_t          trace_fmt1;
+  trace_fmt_A_callback_t          trace_fmt2;
+  trace_fmt_A_callback_t          trace_fmt3;
+  trace_fmt_A_callback_t          trace_fmt4_svca;
+  trace_fmt_A_callback_t          trace_fmt4_svcb;
+  trace_fmt_A_callback_t          trace_fmt4_svcc;
+  trace_fmt_A_callback_t          trace_fmt5;
+  trace_fmt_B_callback_t          trace_fmt6;
+  trace_fmt_C_callback_t          trace_fmt7;
+  trace_fmt_B_callback_t          trace_fmt8;
+  trace_fmt_D_callback_t          trace_fmt9;
+  trace_fmt_D_callback_t          trace_fmt9_jsr;
+  trace_fmt_D_callback_t          trace_fmt9_lea;
+  trace_fmt_E_callback_t          trace_fmt9_sob;
+  trace_fmt_F_callback_t          trace_fmt10;
+  trace_fmt_G_callback_t          trace_fmt11;
+  trace_fmt_H_callback_t          trace_Interrupt;
+  trace_fmt_I_callback_t          trace_fmtInvalid;
+
+  /* memory access callbacks */
+
   get_put_byte_callback_t         getAMbyte;
   get_put_byte_callback_t         putAMbyte;
-
   get_put_word_callback_t         getAMword;
   get_put_word_callback_t         putAMword;
-
   get_put_word_by_mode_callback_t getAMaddrBYmode;
   get_put_word_by_mode_callback_t getAMwordBYmode;
-
   get_byte_by_mode_callback_t     getAMbyteBYmode;
-
   und_by_mode_callback_t          undAMwordBYmode;
   und_by_mode_callback_t          undAMbyteBYmode;
-
   put_word_by_mode_callback_t     putAMwordBYmode;
   put_byte_by_mode_callback_t     putAMbyteBYmode;
 
@@ -215,13 +268,6 @@ void execute_instruction(void);
 void perform_interrupt(void);
 void cpu_thread(void);
 void cpu_stop(void);
-
-/*-------------------------------------------------------------------*/
-/* in trace.c                                                        */
-/*-------------------------------------------------------------------*/
-void trace_Interrupt(int i);
-void trace_fmtInvalid(void);
-
 
 /*-------------------------------------------------------------------*/
 /* misc                                                              */

@@ -26,9 +26,9 @@
 
 #include "cpu-fmt6.h"
 
-#define do_each(opc)                                                  \
-  if (wd11_cpu_state->regs.tracing)                                                   \
-    trace_fmt6(opc, count, reg);
+#define do_each(opc)                                             \
+  if (wd11_cpu_state->regs.tracing)                              \
+    wd11_cpu_state->trace_fmt6(opc, count, reg);
 
 void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
   int op6, op6a, op6b, count, reg, tmp, tmp2, reg2, i;

@@ -28,7 +28,7 @@
 
 #define do_each(opc)                                                           \
   if (wd11_cpu_state->regs.tracing)                                                            \
-    trace_fmt3(opc, arg);
+    wd11_cpu_state->trace_fmt3(opc, arg);
 
 void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
   int op3, arg;

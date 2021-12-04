@@ -110,7 +110,7 @@ void execute_instruction() {
   switch (fmt) {
   case 0:
     if (wd11_cpu_state.regs.tracing) // <<-- here instead of in do_fmt_invalid
-      trace_fmtInvalid();
+      wd11_cpu_state.trace_fmtInvalid();
     do_fmt_invalid(); // because other fmts may later call
     break;            // do_fmt_invalid if further decode fails
   case 1:
@@ -167,7 +167,7 @@ void perform_interrupt() {
     i++;
 
   if (wd11_cpu_state.regs.tracing)
-    trace_Interrupt(i);
+    wd11_cpu_state.trace_Interrupt(i);
 
   pthread_mutex_lock(&wd11_cpu_state.intlock_t);
 

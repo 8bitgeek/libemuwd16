@@ -34,10 +34,6 @@ extern "C"
 #endif
 
 void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state);
-void trace_fmt9(char *opc, int sreg, int dmode, int dreg, uint16_t n1word);
-void trace_fmt9_jsr(char *opc, int sreg, int dmode, int dreg, uint16_t n1word);
-void trace_fmt9_lea(char *opc, int sreg, int dmode, int dreg, uint16_t n1word);
-void trace_fmt9_sob(char *opc, int sreg, int dmode, int dreg);
 
 #ifdef __cplusplus
 }

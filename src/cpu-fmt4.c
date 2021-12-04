@@ -30,11 +30,11 @@
 #define do_each(opc)                                                           \
   if (wd11_cpu_state->regs.tracing) {                                                          \
     if (op4 == 1)                                                              \
-      trace_fmt4_svca(opc, arg);                                               \
+      wd11_cpu_state->trace_fmt4_svca(opc, arg);                                               \
     else if (op4 == 2)                                                         \
-      trace_fmt4_svcb(opc, arg);                                               \
+      wd11_cpu_state->trace_fmt4_svcb(opc, arg);                                               \
     else                                                                       \
-      trace_fmt4_svcc(opc, arg);                                               \
+      wd11_cpu_state->trace_fmt4_svcc(opc, arg);                                               \
   }
 
 void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {

@@ -131,7 +131,7 @@ int afp_put(
 /*-------------------------------------------------------------------*/
 #define do_each(opc)                                                           \
   if (wd11_cpu_state->regs.tracing)                                                            \
-    trace_fmt11(opc, sind, sreg, s, dind, dreg, d);
+    wd11_cpu_state->trace_fmt11(opc, sind, sreg, s, dind, dreg, d);
 
 /*-------------------------------------------------------------------*/
 /* MACRO - standard floating point error trap          */

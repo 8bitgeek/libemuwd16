@@ -26,9 +26,9 @@
 
 #include "cpu-fmt2.h"
 
-#define do_each(opc)                                                           \
-  if (wd11_cpu_state->regs.tracing)                                                            \
-    trace_fmt2(opc, reg);
+#define do_each(opc)                                  \
+  if (wd11_cpu_state->regs.tracing)                   \
+    wd11_cpu_state->trace_fmt2(opc, reg);
 
 void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
   int op2, reg;

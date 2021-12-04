@@ -26,16 +26,16 @@
 
 #include "cpu-fmt9.h"
 
-#define do_each(opc)                                                           \
-  if (wd11_cpu_state->regs.tracing) {                                                          \
-    if (op9 == 0)                                                              \
-      trace_fmt9_jsr(opc, sreg, dmode, dreg, n1word);                          \
-    else if (op9 == 1)                                                         \
-      trace_fmt9_lea(opc, sreg, dmode, dreg, n1word);                          \
-    else if (op9 == 3)                                                         \
-      trace_fmt9_sob(opc, sreg, dmode, dreg);                                  \
-    else                                                                       \
-      trace_fmt9(opc, sreg, dmode, dreg, n1word);                              \
+#define do_each(opc)                                                    \
+  if (wd11_cpu_state->regs.tracing) {                                   \
+    if (op9 == 0)                                                       \
+      wd11_cpu_state->trace_fmt9_jsr(opc, sreg, dmode, dreg, n1word);   \
+    else if (op9 == 1)                                                  \
+      wd11_cpu_state->trace_fmt9_lea(opc, sreg, dmode, dreg, n1word);   \
+    else if (op9 == 3)                                                  \
+      wd11_cpu_state->trace_fmt9_sob(opc, sreg, dmode, dreg);           \
+    else                                                                \
+      wd11_cpu_state->trace_fmt9(opc, sreg, dmode, dreg, n1word);       \
   }
 
 void do_fmt_9(wd11_cpu_state_t* wd11_cpu_state) {

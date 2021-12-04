@@ -34,7 +34,6 @@ extern "C"
 #endif
 
 void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state);
-void trace_fmt1(char *opc, int mask);
 
 #ifdef __cplusplus
 }

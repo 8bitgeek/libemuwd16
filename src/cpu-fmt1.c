@@ -28,7 +28,7 @@
 
 #define do_each(opc)                                                           \
   if (wd11_cpu_state->regs.tracing)                                                            \
-    trace_fmt1(opc, mask);
+    wd11_cpu_state->trace_fmt1(opc, mask);
 
 void do_fmt_1(wd11_cpu_state_t* wd11_cpu_state) {
   unsigned tmp;
