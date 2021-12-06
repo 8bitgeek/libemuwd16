@@ -24,6 +24,8 @@
 #/*                                                                   */
 #/* ----------------------------------------------------------------- */
 
+TARGET   = libwd16.a
+
 VERSION  = 1.0
 
 C        = gcc
@@ -60,18 +62,12 @@ OBJS     = src/wd16.o \
 	  
 HEADERS  = src/wd16.h src/am-ddb.h
 
-all:	   $(EXEFILES)
-
-ad16:  $(OBJS)
-	$(CC) -o ad16 $(OBJS) $(LFLAGS)
+$(TARGET): $(OBJS)
+	ar rcs $(TARGET) $(OBJS)
 
 $(OBJS): %.o: %.c $(HEADERS) makefile
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-
-
 clean:
 	rm -f $(EXEFILES) $(EXEFILES).exe src/*.o
 
-tar:
-	tar cvzf ad16-$(VERSION).tar.gz --exclude \*.o $(TARFILES)
