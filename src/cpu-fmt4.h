@@ -34,10 +34,10 @@ extern "C"
 #endif
 
 
-void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state);
-int svca_assist(wd11_cpu_state_t* wd11_cpu_state,int arg);
-int svcb_assist(wd11_cpu_state_t* wd11_cpu_state,int arg);
-int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg);
+void do_fmt_4(wd16_cpu_state_t* wd16_cpu_state);
+int svca_assist(wd16_cpu_state_t* wd16_cpu_state,int arg);
+int svcb_assist(wd16_cpu_state_t* wd16_cpu_state,int arg);
+int svcc_assist(wd16_cpu_state_t* wd16_cpu_state,int arg);
 
 void vdkdvr(void);
 

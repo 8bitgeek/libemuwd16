@@ -33,7 +33,7 @@ extern "C"
 {
 #endif
 
-void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state);
+void do_fmt_7(wd16_cpu_state_t* wd16_cpu_state);
 
 #ifdef __cplusplus
 }

@@ -28,16 +28,16 @@
 #include "cpu-fmt4.h"
 
 #define do_each(opc)                                                           \
-  if (wd11_cpu_state->regs.tracing) {                                                          \
+  if (wd16_cpu_state->regs.tracing) {                                                          \
     if (op4 == 1)                                                              \
-      wd11_cpu_state->trace_fmt4_svca(opc, arg);                                               \
+      wd16_cpu_state->trace_fmt4_svca(opc, arg);                                               \
     else if (op4 == 2)                                                         \
-      wd11_cpu_state->trace_fmt4_svcb(opc, arg);                                               \
+      wd16_cpu_state->trace_fmt4_svcb(opc, arg);                                               \
     else                                                                       \
-      wd11_cpu_state->trace_fmt4_svcc(opc, arg);                                               \
+      wd16_cpu_state->trace_fmt4_svcc(opc, arg);                                               \
   }
 
-void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
+void do_fmt_4(wd16_cpu_state_t* wd16_cpu_state) {
   int op4, arg;
   uint16_t tmpa, tmpb;
 
@@ -50,8 +50,8 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
   //      word op codes with a 6 bit numeric argument.
   //
 
-  arg = wd11_cpu_state->op & 63;
-  op4 = wd11_cpu_state->op >> 6;
+  arg = wd16_cpu_state->op & 63;
+  op4 = wd16_cpu_state->op >> 6;
 
   switch (op4) {
   case 1:
@@ -73,15 +73,15 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("SVCA");
-    if (!svca_assist(wd11_cpu_state,arg)) {
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x22);
-      wd11_cpu_state->regs.PC += arg * 2;
-      wd11_cpu_state->getAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.PC);
-      wd11_cpu_state->regs.PC += tmpa;
+    if (!svca_assist(wd16_cpu_state,arg)) {
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PS, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PC, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.PC, 0x22);
+      wd16_cpu_state->regs.PC += arg * 2;
+      wd16_cpu_state->getAMword((unsigned char *)&tmpa, wd16_cpu_state->regs.PC);
+      wd16_cpu_state->regs.PC += tmpa;
     }
     break;
   case 2:
@@ -109,30 +109,30 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("SVCB");
-    if (!svcb_assist(wd11_cpu_state,arg)) {
-      tmpa = wd11_cpu_state->regs.SP;
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
-      tmpb = wd11_cpu_state->regs.SP;
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.R1 = tmpb;
-      wd11_cpu_state->regs.R5 = arg * 2;
-      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x24);
+    if (!svcb_assist(wd16_cpu_state,arg)) {
+      tmpa = wd16_cpu_state->regs.SP;
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PS, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PC, wd16_cpu_state->regs.SP);
+      tmpb = wd16_cpu_state->regs.SP;
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&tmpa, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R5, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R4, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R3, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R2, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R1, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R0, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.R1 = tmpb;
+      wd16_cpu_state->regs.R5 = arg * 2;
+      wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.PC, 0x24);
     }
     break;
   case 3:
@@ -142,30 +142,30 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
     //                       for SVCC instead of "24" as for SVCB.
     //
     do_each("SVCC");
-    if (!svcc_assist(wd11_cpu_state,arg)) {
-      tmpa = wd11_cpu_state->regs.SP;
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);
-      tmpb = wd11_cpu_state->regs.SP;
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&tmpa, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R5, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R4, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R3, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R2, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R1, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.SP -= 2;
-      wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, wd11_cpu_state->regs.SP);
-      wd11_cpu_state->regs.R1 = tmpb;
-      wd11_cpu_state->regs.R5 = arg * 2;
-      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x26);
+    if (!svcc_assist(wd16_cpu_state,arg)) {
+      tmpa = wd16_cpu_state->regs.SP;
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PS, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PC, wd16_cpu_state->regs.SP);
+      tmpb = wd16_cpu_state->regs.SP;
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&tmpa, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R5, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R4, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R3, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R2, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R1, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.SP -= 2;
+      wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R0, wd16_cpu_state->regs.SP);
+      wd16_cpu_state->regs.R1 = tmpb;
+      wd16_cpu_state->regs.R5 = arg * 2;
+      wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.PC, 0x26);
     }
     break;
   default:
@@ -181,24 +181,24 @@ void do_fmt_4(wd11_cpu_state_t* wd11_cpu_state) {
 //             'false' if the AMOS monitor service routine is to be used
 //
 
-int svca_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
+int svca_assist(wd16_cpu_state_t* wd16_cpu_state,int arg) {
   if (arg == 9) { // turn off user trace on exit...
-    if (wd11_cpu_state->regs.utrace) {
-      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.utRX, 0x4E); // JOBCUR
-      if (wd11_cpu_state->regs.utR0 == wd11_cpu_state->regs.utRX) {
-        wd11_cpu_state->regs.tracing = false;
-        wd11_cpu_state->regs.utrace = false;
+    if (wd16_cpu_state->regs.utrace) {
+      wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.utRX, 0x4E); // JOBCUR
+      if (wd16_cpu_state->regs.utR0 == wd16_cpu_state->regs.utRX) {
+        wd16_cpu_state->regs.tracing = false;
+        wd16_cpu_state->regs.utrace = false;
       }
     }
   }
   return (false);
 }
 
-int svcb_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) { return (false); }
+int svcb_assist(wd16_cpu_state_t* wd16_cpu_state,int arg) { return (false); }
 
-int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
+int svcc_assist(wd16_cpu_state_t* wd16_cpu_state,int arg) {
 
-  if (wd11_cpu_state->cpu4_svcctxt[0] == 'h')
+  if (wd16_cpu_state->cpu4_svcctxt[0] == 'h')
     arg = 63 - arg;
 
   if (arg == 0) { // entry to virtual disk driver
@@ -206,32 +206,32 @@ int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
     return (true);
   }
   if (arg == 1) { // turn tracing off
-    wd11_cpu_state->regs.tracing = false;
-    wd11_cpu_state->regs.stepping = false;
+    wd16_cpu_state->regs.tracing = false;
+    wd16_cpu_state->regs.stepping = false;
     return (true);
   }
   if (arg == 2) { // turn tracing on
-    wd11_cpu_state->regs.tracing = true;
+    wd16_cpu_state->regs.tracing = true;
     return (true);
   }
   if (arg == 4) { // turn user tracing on
-    if (!wd11_cpu_state->regs.utrace)
-      wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.utR0, 0x4E); // JOBCUR
-    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.utPC, 0x46);   // MEMBAS
-    wd11_cpu_state->regs.utrace = true;
-    wd11_cpu_state->regs.tracing = true;
-    wd11_cpu_state->regs.R0 = wd11_cpu_state->regs.utR0;
+    if (!wd16_cpu_state->regs.utrace)
+      wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.utR0, 0x4E); // JOBCUR
+    wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.utPC, 0x46);   // MEMBAS
+    wd16_cpu_state->regs.utrace = true;
+    wd16_cpu_state->regs.tracing = true;
+    wd16_cpu_state->regs.R0 = wd16_cpu_state->regs.utR0;
     return (true);
   }
   if (arg == 5) { // turn user tracing off
-    wd11_cpu_state->regs.utrace = false;
-    wd11_cpu_state->regs.tracing = false;
-    wd11_cpu_state->regs.stepping = false;
+    wd16_cpu_state->regs.utrace = false;
+    wd16_cpu_state->regs.tracing = false;
+    wd16_cpu_state->regs.stepping = false;
     return (true);
   }
   if (arg == 6) { // turn tracing on with stepping
-    wd11_cpu_state->regs.tracing = true;
-    wd11_cpu_state->regs.stepping = true;
+    wd16_cpu_state->regs.tracing = true;
+    wd16_cpu_state->regs.stepping = true;
     fprintf(stderr, "\n\rYou have entered single step mode.  ");
     fprintf(stderr, "ALT-S to step.  ");
     fprintf(stderr, "ALT-R to resume..\n\r");
@@ -239,29 +239,29 @@ int svcc_assist(wd11_cpu_state_t* wd11_cpu_state,int arg) {
   }
   if (arg == 7) { // snap JOBBAS thru JOBSIZ to trace
     uint16_t LINK, R0, SIZE;
-    wd11_cpu_state->getAMword((unsigned char *)&R0, 0x4E);      // JOBCUR
-    wd11_cpu_state->getAMword((unsigned char *)&LINK, R0 + 12); // JOBBAS
-    wd11_cpu_state->getAMword((unsigned char *)&SIZE, R0 + 14); // JOBSIZ
+    wd16_cpu_state->getAMword((unsigned char *)&R0, 0x4E);      // JOBCUR
+    wd16_cpu_state->getAMword((unsigned char *)&LINK, R0 + 12); // JOBBAS
+    wd16_cpu_state->getAMword((unsigned char *)&SIZE, R0 + 14); // JOBSIZ
     fprintf(stderr, "\n\r<><>SVCC 7 memory dump<><>\n\r");
     config_memdump(LINK, SIZE);
     return (true);
   }
   // if (arg == 8) { // special snap of particular memory block to trace
   //      uint16_t LINK, R0, SIZE;
-  //      wd11_cpu_state->getAMword((unsigned char *)&R0,   0x4E);  // JOBCUR
-  //      wd11_cpu_state->getAMword((unsigned char *)&LINK, R0+12); // JOBBAS
+  //      wd16_cpu_state->getAMword((unsigned char *)&R0,   0x4E);  // JOBCUR
+  //      wd16_cpu_state->getAMword((unsigned char *)&LINK, R0+12); // JOBBAS
   //      fprintf(stderr,"\n\r<><>SVCC 8 memory dump<><>\n\r");
-  //        wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; // s.b.
-  //        link=464e wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; //
-  //        s.b. link=4858 wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK +=
-  //        SIZE; // s.b. link=4a62 wd11_cpu_state->getAMword((unsigned char *)&SIZE, LINK);
-  //        LINK += SIZE; // s.b. link=4c6c wd11_cpu_state->getAMword((unsigned char *)&SIZE,
+  //        wd16_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; // s.b.
+  //        link=464e wd16_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK += SIZE; //
+  //        s.b. link=4858 wd16_cpu_state->getAMword((unsigned char *)&SIZE, LINK); LINK +=
+  //        SIZE; // s.b. link=4a62 wd16_cpu_state->getAMword((unsigned char *)&SIZE, LINK);
+  //        LINK += SIZE; // s.b. link=4c6c wd16_cpu_state->getAMword((unsigned char *)&SIZE,
   //        LINK); // s.b. LINK= 4c6c, SIZE = 20e
   //      config_memdump(LINK, SIZE);
   //      return(true);
   //      }
   if (arg == 9) { // shutdown!
-    wd11_cpu_state->regs.halting = true;
+    wd16_cpu_state->regs.halting = true;
     return (true);
   }
   return (false);

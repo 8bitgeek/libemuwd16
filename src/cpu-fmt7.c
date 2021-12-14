@@ -27,10 +27,10 @@
 #include "cpu-fmt7.h"
 
 #define do_each(opc)                                                           \
-  if (wd11_cpu_state->regs.tracing)                                                            \
-    wd11_cpu_state->trace_fmt7(opc, mode, reg, n1word);
+  if (wd16_cpu_state->regs.tracing)                                                            \
+    wd16_cpu_state->trace_fmt7(opc, mode, reg, n1word);
 
-void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
+void do_fmt_7(wd16_cpu_state_t* wd16_cpu_state) {
   int op7, mode, reg;
   uint16_t tmp, tmp2, tmp3, n1word;
 
@@ -50,15 +50,15 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
   //      current op code + 4). Codes "8A00" to "8CC0" are BYTE ops.
   //
 
-  reg = (wd11_cpu_state->op & 7);
-  mode = (wd11_cpu_state->op & 63) >> 3;
-  op7 = wd11_cpu_state->op >> 6; /* 40-55, 552-567 */
+  reg = (wd16_cpu_state->op & 7);
+  mode = (wd16_cpu_state->op & 63) >> 3;
+  op7 = wd16_cpu_state->op >> 6; /* 40-55, 552-567 */
   if (op7 > 55)
     op7 = op7 - 496; /* 40-71 */
 
   if (mode > 5) {
-    wd11_cpu_state->getAMword((unsigned char *)&n1word, wd11_cpu_state->regs.PC);
-    wd11_cpu_state->regs.PC += 2;
+    wd16_cpu_state->getAMword((unsigned char *)&n1word, wd16_cpu_state->regs.PC);
+    wd16_cpu_state->regs.PC += 2;
   }
 
   switch (op7) {
@@ -79,20 +79,20 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //   "TSTCC 10005     ;** V should be set"
     //
     do_each("ROR");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = tmp & 1;
     tmp = tmp >> 1;
-    if (wd11_cpu_state->regs.PS.C == 1)
+    if (wd16_cpu_state->regs.PS.C == 1)
       tmp |= 0x8000;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 41:
     //      ROL             ROTATE LEFT
@@ -107,19 +107,19 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set to the value of the bit shifted out of (DST)
     //
     do_each("ROL");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = ((tmp & 0x8000) != 0);
     tmp = tmp << 1;
-    if (wd11_cpu_state->regs.PS.C == 1)
+    if (wd16_cpu_state->regs.PS.C == 1)
       tmp |= 1;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   case 42:
     //      TST             TEST WORD
@@ -134,12 +134,12 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Unchanged
     //
     do_each("TST");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     break;
   case 43:
     //      ASL             ARITHMETIC SHIFT LEFT
@@ -154,17 +154,17 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set to the value of the bit shifted out of (DST)
     //
     do_each("ASL");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = ((tmp & 0x8000) != 0);
     tmp = tmp << 1;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   case 44:
     //      SET             SET TO ONES
@@ -179,10 +179,10 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SET");
     tmp = -1;
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.V = 0;
     break;
   case 45:
     //      CLR             CLEAR TO ZEROS
@@ -197,12 +197,12 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("CLR");
     tmp = 0;
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = 0;
-    wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = 0;
+    wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (mode > 0)
-      wd11_cpu_state->regs.PS.C = 0;
+      wd16_cpu_state->regs.PS.C = 0;
     break;
   case 46:
     //      ASR             ARITHMETIC SHIFT RIGHT
@@ -222,20 +222,20 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //   "TSTCC 10001     ;** V should be set; should not set N"
     //
     do_each("ASR");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = tmp & 1;
     tmp3 = tmp & 0x8000;
     tmp = tmp >> 1;
     tmp = tmp | tmp3;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 47:
     //      SWAB            SWAP BYTES
@@ -249,17 +249,17 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Unchanged
     //
     do_each("SWAB");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = tmp >> 8;
     tmp3 = (tmp & 0xff) << 8;
     tmp = tmp2 | tmp3;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if ((tmp & 0xff) == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     break;
   case 48:
     //      COM             COMPLEMENT
@@ -273,16 +273,16 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set
     //
     do_each("COM");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp = (~tmp) & 0xffff;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
-    wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.C = 1;
     break;
   case 49:
     //      NEG             NEGATE
@@ -296,20 +296,20 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Reset if (DST) = 0
     //
     do_each("NEG");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp = (-tmp) & 0xffff;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (tmp == 0x8000)
-      wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.V = 1;
     if (tmp == 0) {
-      wd11_cpu_state->regs.PS.Z = 1;
-      wd11_cpu_state->regs.PS.C = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+      wd16_cpu_state->regs.PS.C = 0;
     } else {
-      wd11_cpu_state->regs.PS.Z = 0;
-      wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.Z = 0;
+      wd16_cpu_state->regs.PS.C = 1;
     }
     break;
   case 50:
@@ -324,19 +324,19 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set if a carry is generated from (DST) bit 15
     //
     do_each("INC");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = (tmp >> 15) & 1;
     tmp = (tmp + 1) & 0xffff;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (tmp == 0x8000)
-      wd11_cpu_state->regs.PS.V = 1;
-    wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.PS.Z;
+      wd16_cpu_state->regs.PS.V = 1;
+    wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.PS.Z;
     break;
   case 51:
     //      DEC             DECREMENT
@@ -350,21 +350,21 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set if a borrow is generated from (DST) bit 15
     //
     do_each("DEC");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
-    wd11_cpu_state->regs.PS.C = 0;
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    wd16_cpu_state->regs.PS.C = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.C = 1;
     tmp2 = (tmp >> 15) & 1;
     tmp = (tmp - 1) & 0xffff;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (tmp == 0x7FFF)
-      wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.V = 1;
     break;
   case 52:
     //      IW2             INCREMENT WORD BY TWO
@@ -378,24 +378,24 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set if a carry is generated from (DST) bit 15
     //
     do_each("IW2");
-    wd11_cpu_state->regs.PS.C = 0;
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    wd16_cpu_state->regs.PS.C = 0;
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = (tmp >> 15) & 1;
     tmp = (tmp + 1) & 0xffff;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.C = 1;
     tmp = (tmp + 1) & 0xffff;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.C = 1;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+      wd16_cpu_state->regs.PS.C = 1;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (tmp == 0x8000)
-      wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.V = 1;
     break;
   case 53:
     //      SXT             SIGN EXTEND
@@ -408,9 +408,9 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SXT");
     tmp = 0;
-    if (wd11_cpu_state->regs.PS.N == 1)
+    if (wd16_cpu_state->regs.PS.N == 1)
       tmp = 0xFFFF;
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
     break;
   case 54:
     //      TCALL           TABLED SUBROUTINE CALL
@@ -431,19 +431,19 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("TCALL");
     /* ORIGINAL CODE
-                        wd11_cpu_state->regs.SP -= 2; putAMword((unsigned char
-       *)&wd11_cpu_state->regs.PC,wd11_cpu_state->regs.SP); tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word); wd11_cpu_state->regs.PC +=
-       tmp; wd11_cpu_state->getAMword((unsigned char *)&tmp, wd11_cpu_state->regs.PC); wd11_cpu_state->regs.PC += tmp;
+                        wd16_cpu_state->regs.SP -= 2; putAMword((unsigned char
+       *)&wd16_cpu_state->regs.PC,wd16_cpu_state->regs.SP); tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word); wd16_cpu_state->regs.PC +=
+       tmp; wd16_cpu_state->getAMword((unsigned char *)&tmp, wd16_cpu_state->regs.PC); wd16_cpu_state->regs.PC += tmp;
     */
 
     // MODIFIED CODE BY FJC
-    tmp2 = wd11_cpu_state->regs.PC; // save return address
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
-    wd11_cpu_state->regs.SP -= 2; // mov tmp,-(sp)
-    wd11_cpu_state->putAMword((unsigned char *)&tmp2, wd11_cpu_state->regs.SP);
-    wd11_cpu_state->regs.PC += tmp; // add @pc,pc
-    wd11_cpu_state->getAMword((unsigned char *)&tmp, wd11_cpu_state->regs.PC);
-    wd11_cpu_state->regs.PC += tmp;
+    tmp2 = wd16_cpu_state->regs.PC; // save return address
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    wd16_cpu_state->regs.SP -= 2; // mov tmp,-(sp)
+    wd16_cpu_state->putAMword((unsigned char *)&tmp2, wd16_cpu_state->regs.SP);
+    wd16_cpu_state->regs.PC += tmp; // add @pc,pc
+    wd16_cpu_state->getAMword((unsigned char *)&tmp, wd16_cpu_state->regs.PC);
+    wd16_cpu_state->regs.PC += tmp;
 
     break;
   case 55:
@@ -459,10 +459,10 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("TJMP");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
-    wd11_cpu_state->regs.PC += tmp;
-    wd11_cpu_state->getAMword((unsigned char *)&tmp, wd11_cpu_state->regs.PC);
-    wd11_cpu_state->regs.PC += tmp;
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    wd16_cpu_state->regs.PC += tmp;
+    wd16_cpu_state->getAMword((unsigned char *)&tmp, wd16_cpu_state->regs.PC);
+    wd16_cpu_state->regs.PC += tmp;
     break;
   case 56:
     //
@@ -492,20 +492,20 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //   "TSTCC 10005     ;** V should be set"
     //
     do_each("RORB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp2 = tmp & 1;
     tmp = tmp >> 1;
-    if (wd11_cpu_state->regs.PS.C == 1)
+    if (wd16_cpu_state->regs.PS.C == 1)
       tmp |= 0x80;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 57:
     //      ROLB            ROTATE LEFT BYTE
@@ -520,19 +520,19 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set to value of bit shifted out of (DST) bit 7
     //
     do_each("ROLB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp2 = ((tmp & 0x80) != 0);
     tmp = tmp << 1;
-    if (wd11_cpu_state->regs.PS.C == 1)
+    if (wd16_cpu_state->regs.PS.C == 1)
       tmp |= 1;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   case 58:
     //      TSTB            TEST BYTE
@@ -546,12 +546,12 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Unchanged
     //
     do_each("TSTB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     break;
   case 59:
     //      ASLB            ARITHMETIC SHIFT LEFT BYTE
@@ -567,17 +567,17 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set to value of bit shifted out of (DST) bit 7
     //
     do_each("ASLB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp2 = (tmp >> 7) & 1;
     tmp = (tmp << 1) & 0xff;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   case 60:
     //      SETB            SET BYTE TO ONES
@@ -592,10 +592,10 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SETB");
     tmp = -1;
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.V = 0;
     break;
   case 61:
     //      CLRB            CLEAR BYTE TO ZEROS
@@ -610,11 +610,11 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("CLRB");
     tmp = 0;
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = 0;
-    wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
-    wd11_cpu_state->regs.PS.C = 0;
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = 0;
+    wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.C = 0;
     break;
   case 62:
     //      ASRB            ARITHMETIC SHIFT RIGHT BYTE
@@ -634,20 +634,20 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //   "TSTCC 10010     ;** V should be set"
     //
     do_each("ASRB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp2 = tmp & 1;
     tmp3 = tmp & 0x80;
     tmp = tmp >> 1;
     tmp = tmp | tmp3;
-    wd11_cpu_state->regs.PS.C = tmp2;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.C = tmp2;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 63:
     //      SWAD            SWAP DIGITS
@@ -665,18 +665,18 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //   "TSTCC 10010     ;** V should be set"
     //
     do_each("SWAD");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp2 = tmp >> 4;
     tmp3 = (tmp & 0x0f) << 4;
     tmp = tmp2 | tmp3;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if ((tmp & 0xff) == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
-    wd11_cpu_state->regs.PS.C = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.C = 0;
     break;
   case 64:
     //      COMB            COMPLEMENT BYTE
@@ -690,16 +690,16 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set
     //
     do_each("COMB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp = (~tmp) & 0xff;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
-    wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.C = 1;
     break;
   case 65:
     //      NEGB            NEGATE BYTE
@@ -713,20 +713,20 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Reset if (DST) = 0
     //
     do_each("NEGB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp = (-tmp) & 0xff;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (tmp == 0x80)
-      wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.V = 1;
     if (tmp == 0) {
-      wd11_cpu_state->regs.PS.Z = 1;
-      wd11_cpu_state->regs.PS.C = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+      wd16_cpu_state->regs.PS.C = 0;
     } else {
-      wd11_cpu_state->regs.PS.Z = 0;
-      wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.Z = 0;
+      wd16_cpu_state->regs.PS.C = 1;
     }
     break;
   case 66:
@@ -741,21 +741,21 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set if Carry is generated from (DST) bit 7
     //
     do_each("INCB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp2 = (tmp >> 7) & 1;
     tmp = (tmp + 1) & 0xff;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (tmp == 0x80)
-      wd11_cpu_state->regs.PS.V = 1;
-    wd11_cpu_state->regs.PS.C = 0;
-    if ((tmp2 == 1) && (wd11_cpu_state->regs.PS.N == 0))
-      wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.V = 1;
+    wd16_cpu_state->regs.PS.C = 0;
+    if ((tmp2 == 1) && (wd16_cpu_state->regs.PS.N == 0))
+      wd16_cpu_state->regs.PS.C = 1;
     break;
   case 67:
     //      DECB            DECREMENT BYTE
@@ -769,21 +769,21 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set if a borrow is generated from (DST) bit 7
     //
     do_each("DECB");
-    tmp = wd11_cpu_state->getAMbyteBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMbyteBYmode(reg, mode, n1word);
     tmp2 = (tmp >> 7) & 1;
     tmp = (tmp - 1) & 0xff;
-    wd11_cpu_state->undAMbyteBYmode(reg, mode);
-    wd11_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMbyteBYmode(reg, mode);
+    wd16_cpu_state->putAMbyteBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     if (tmp == 0x7F)
-      wd11_cpu_state->regs.PS.V = 1;
-    wd11_cpu_state->regs.PS.C = 0;
-    if ((tmp2 == 0) && (wd11_cpu_state->regs.PS.N == 1))
-      wd11_cpu_state->regs.PS.C = 1;
+      wd16_cpu_state->regs.PS.V = 1;
+    wd16_cpu_state->regs.PS.C = 0;
+    if ((tmp2 == 0) && (wd16_cpu_state->regs.PS.N == 1))
+      wd16_cpu_state->regs.PS.C = 1;
     break;
   case 68:
     //
@@ -799,7 +799,7 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      NOTE: I2 will be (DST) bit 12.
     //
     do_each("LSTS");
-    wd11_cpu_state->regs.gpr[8] = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    wd16_cpu_state->regs.gpr[8] = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     break;
   case 69:
     //      SSTS            STORE PROCESSOR STATUS
@@ -809,7 +809,7 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //      (DST), INDICATORS:     Unchanged
     //
     do_each("SSTS");
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, wd11_cpu_state->regs.gpr[8]);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, wd16_cpu_state->regs.gpr[8]);
     break;
   case 70:
     //      ADC             ADD CARRY
@@ -828,21 +828,21 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //   "TSTCC 10010     ;** V should be set"
     //
     do_each("ADC");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
-    if (wd11_cpu_state->regs.PS.C == 1) {
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    if (wd16_cpu_state->regs.PS.C == 1) {
       tmp = (tmp + 1) & 0xffff;
-      wd11_cpu_state->regs.PS.C = 0;
+      wd16_cpu_state->regs.PS.C = 0;
       if (tmp == 0)
-        wd11_cpu_state->regs.PS.C = 1;
+        wd16_cpu_state->regs.PS.C = 1;
     }
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 71:
     //      SBC             SUBTBACT CARRY
@@ -856,20 +856,20 @@ void do_fmt_7(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Set if a borrow is generated from (DST) bit 15
     //
     do_each("SBC");
-    tmp = wd11_cpu_state->getAMwordBYmode(reg, mode, n1word);
+    tmp = wd16_cpu_state->getAMwordBYmode(reg, mode, n1word);
     tmp2 = (tmp >> 15) & 1;
-    if (wd11_cpu_state->regs.PS.C == 1)
+    if (wd16_cpu_state->regs.PS.C == 1)
       tmp--;
-    wd11_cpu_state->undAMwordBYmode(reg, mode);
-    wd11_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
-    wd11_cpu_state->regs.PS.N = (tmp >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->undAMwordBYmode(reg, mode);
+    wd16_cpu_state->putAMwordBYmode(reg, mode, n1word, tmp);
+    wd16_cpu_state->regs.PS.N = (tmp >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
     if (tmp == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.C = 0;
-    if ((tmp2 == 0) && (wd11_cpu_state->regs.PS.N == 1))
-      wd11_cpu_state->regs.PS.C = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.C = 0;
+    if ((tmp2 == 0) && (wd16_cpu_state->regs.PS.N == 1))
+      wd16_cpu_state->regs.PS.C = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   default:
     assert("invalid return from fmt_7 lookup...");

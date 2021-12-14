@@ -27,10 +27,10 @@
 #include "cpu-fmt3.h"
 
 #define do_each(opc)                                                           \
-  if (wd11_cpu_state->regs.tracing)                                                            \
-    wd11_cpu_state->trace_fmt3(opc, arg);
+  if (wd16_cpu_state->regs.tracing)                                                            \
+    wd16_cpu_state->trace_fmt3(opc, arg);
 
-void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
+void do_fmt_3(wd16_cpu_state_t* wd16_cpu_state) {
   int op3, arg;
 
   //      FORMAT 3 OP CODES
@@ -42,8 +42,8 @@ void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
   //      argument.
   //
 
-  arg = wd11_cpu_state->op & 15;
-  op3 = wd11_cpu_state->op >> 4;
+  arg = wd16_cpu_state->op & 15;
+  op3 = wd16_cpu_state->op >> 4;
 
   switch (op3) {
   case 3:
@@ -58,10 +58,10 @@ void do_fmt_3(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = set per bit 0 of op code
     //
     do_each("LCC");
-    wd11_cpu_state->regs.PS.N = (arg >> 3) & 1;
-    wd11_cpu_state->regs.PS.Z = (arg >> 2) & 1;
-    wd11_cpu_state->regs.PS.V = (arg >> 1) & 1;
-    wd11_cpu_state->regs.PS.C = (arg >> 0) & 1;
+    wd16_cpu_state->regs.PS.N = (arg >> 3) & 1;
+    wd16_cpu_state->regs.PS.Z = (arg >> 2) & 1;
+    wd16_cpu_state->regs.PS.V = (arg >> 1) & 1;
+    wd16_cpu_state->regs.PS.C = (arg >> 0) & 1;
     break;
   default:
     assert("cpu-fmt3.c - invalid return from fmt_3 lookup");

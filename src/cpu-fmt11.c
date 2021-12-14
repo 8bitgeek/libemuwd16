@@ -130,23 +130,23 @@ int afp_put(
 /* MACRO - trace opcode                */
 /*-------------------------------------------------------------------*/
 #define do_each(opc)                                                           \
-  if (wd11_cpu_state->regs.tracing)                                                            \
-    wd11_cpu_state->trace_fmt11(opc, sind, sreg, s, dind, dreg, d);
+  if (wd16_cpu_state->regs.tracing)                                                            \
+    wd16_cpu_state->trace_fmt11(opc, sind, sreg, s, dind, dreg, d);
 
 /*-------------------------------------------------------------------*/
 /* MACRO - standard floating point error trap          */
 /*-------------------------------------------------------------------*/
 #define FP_trap                                                                \
-  wd11_cpu_state->regs.SP -= 2;                                                                \
-  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PS, wd11_cpu_state->regs.SP);                               \
-  wd11_cpu_state->regs.SP -= 2;                                                                \
-  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, wd11_cpu_state->regs.SP);                               \
-  wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x3E);
+  wd16_cpu_state->regs.SP -= 2;                                                                \
+  wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PS, wd16_cpu_state->regs.SP);                               \
+  wd16_cpu_state->regs.SP -= 2;                                                                \
+  wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PC, wd16_cpu_state->regs.SP);                               \
+  wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.PC, 0x3E);
 
 /*-------------------------------------------------------------------*/
 /* Fmt 11 entry for floating point instructions          */
 /*-------------------------------------------------------------------*/
-void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
+void do_fmt_11(wd16_cpu_state_t* wd16_cpu_state) {
   int op11, sind, smode, sreg, dind, dmode, dreg, oflg;
   uint16_t saddr, daddr;
   AFP afp_s, afp_d, afp_r;
@@ -279,33 +279,33 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
   //               instead of 0.
   //
 
-  op11 = (wd11_cpu_state->op >> 8) & 15; /* 0-15, but 5-15 invalid */
-  dreg = wd11_cpu_state->op & 7;
-  dind = (wd11_cpu_state->op >> 3) & 1;
-  sreg = (wd11_cpu_state->op >> 4) & 7;
-  sind = (wd11_cpu_state->op >> 7) & 1;
+  op11 = (wd16_cpu_state->op >> 8) & 15; /* 0-15, but 5-15 invalid */
+  dreg = wd16_cpu_state->op & 7;
+  dind = (wd16_cpu_state->op >> 3) & 1;
+  sreg = (wd16_cpu_state->op >> 4) & 7;
+  sind = (wd16_cpu_state->op >> 7) & 1;
 
   if (sind == 0)
     smode = 1;
   else
     smode = 7;
-  saddr = wd11_cpu_state->getAMaddrBYmode(sreg, smode, 0);
-  wd11_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
+  saddr = wd16_cpu_state->getAMaddrBYmode(sreg, smode, 0);
+  wd16_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
   if (op11 == 1) {
     afp_s.words.AFP_1.S = ~afp_s.words.AFP_1.S;
-    wd11_cpu_state->putAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_s.words.AFP_1, saddr);
   }
-  wd11_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_2, saddr + 2);
-  wd11_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_3, saddr + 4);
+  wd16_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_2, saddr + 2);
+  wd16_cpu_state->getAMword((unsigned char *)&afp_s.words.AFP_3, saddr + 4);
   afp_get(&afp_s, &s);
   if (dind == 0)
     dmode = 1;
   else
     dmode = 7;
-  daddr = wd11_cpu_state->getAMaddrBYmode(dreg, dmode, 0);
-  wd11_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_1, daddr);
-  wd11_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_2, daddr + 2);
-  wd11_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_3, daddr + 4);
+  daddr = wd16_cpu_state->getAMaddrBYmode(dreg, dmode, 0);
+  wd16_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_1, daddr);
+  wd16_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_2, daddr + 2);
+  wd16_cpu_state->getAMword((unsigned char *)&afp_d.words.AFP_3, daddr + 4);
   afp_get(&afp_d, &d);
 
   switch (op11) {
@@ -345,25 +345,25 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
     if (op11 == 0)
       do_each("FADD");
     r = d + s;
-    wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.Z = wd11_cpu_state->regs.PS.N = 0;
+    wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.Z = wd16_cpu_state->regs.PS.N = 0;
     oflg = afp_put(&afp_r, &r);
     if (oflg > 0) {
-      wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.V = 1;
       FP_trap;
       break;
     }
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
     if (oflg < 0) {
-      wd11_cpu_state->regs.PS.N = wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.N = wd16_cpu_state->regs.PS.V = 1;
       FP_trap;
       break;
     }
     if (r < 0)
-      wd11_cpu_state->regs.PS.N = 1;
+      wd16_cpu_state->regs.PS.N = 1;
     if (r == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
+      wd16_cpu_state->regs.PS.Z = 1;
     break;
   case 2:
     //      FMUL            FLOATING POINT MULTIPLY
@@ -381,25 +381,25 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("FMUL");
     r = d * s;
-    wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.Z = wd11_cpu_state->regs.PS.N = 0;
+    wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.Z = wd16_cpu_state->regs.PS.N = 0;
     oflg = afp_put(&afp_r, &r);
     if (oflg > 0) {
-      wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.V = 1;
       FP_trap;
       break;
     }
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
     if (oflg < 0) {
-      wd11_cpu_state->regs.PS.N = wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.N = wd16_cpu_state->regs.PS.V = 1;
       FP_trap;
       break;
     }
     if (r < 0)
-      wd11_cpu_state->regs.PS.N = 1;
+      wd16_cpu_state->regs.PS.N = 1;
     if (r == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
+      wd16_cpu_state->regs.PS.Z = 1;
     break;
   case 3:
     //      FDIV            FLOATING POINT DIVIDE
@@ -417,31 +417,31 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("FDIV");
     if (s == 0) {
-      wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.N = 1;
-      wd11_cpu_state->regs.PS.Z = 0;
+      wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.N = 1;
+      wd16_cpu_state->regs.PS.Z = 0;
       FP_trap;
       break;
     }
     r = d / s;
     oflg = afp_put(&afp_r, &r);
-    wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.Z = wd11_cpu_state->regs.PS.N = 0;
+    wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.Z = wd16_cpu_state->regs.PS.N = 0;
     if (oflg > 0) {
-      wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.V = 1;
       FP_trap;
       break;
     }
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
-    wd11_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_1, daddr);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_2, daddr + 2);
+    wd16_cpu_state->putAMword((unsigned char *)&afp_r.words.AFP_3, daddr + 4);
     if (oflg < 0) {
-      wd11_cpu_state->regs.PS.N = wd11_cpu_state->regs.PS.V = 1;
+      wd16_cpu_state->regs.PS.N = wd16_cpu_state->regs.PS.V = 1;
       FP_trap;
       break;
     }
     if (r < 0)
-      wd11_cpu_state->regs.PS.N = 1;
+      wd16_cpu_state->regs.PS.N = 1;
     if (r == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
+      wd16_cpu_state->regs.PS.Z = 1;
     break;
   case 4:
     //      FCMP            FLOATING POINT COMPARE
@@ -460,13 +460,13 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("FCMP");
 
-    wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.Z = wd11_cpu_state->regs.PS.N = 0;
+    wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.Z = wd16_cpu_state->regs.PS.N = 0;
     if (d == s)
-      wd11_cpu_state->regs.PS.Z = 1;
+      wd16_cpu_state->regs.PS.Z = 1;
     if (d > s) {
-      wd11_cpu_state->regs.PS.N = 1;
+      wd16_cpu_state->regs.PS.N = 1;
       if (memcmp(&afp_d.words.AFP_1, &afp_s.words.AFP_1, 2) != 0)
-        wd11_cpu_state->regs.PS.C = 1;
+        wd16_cpu_state->regs.PS.C = 1;
     }
 
     break;
@@ -475,10 +475,10 @@ void do_fmt_11(wd11_cpu_state_t* wd11_cpu_state) {
     break;
   } /* end switch(op11) */
 
-  wd11_cpu_state->putAMword((unsigned char *)&daddr, 0x30); // fill 'save area'...
-  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.SP, 0x32);
-  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.PC, 0x34);
-  wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.R0, 0x36);
-  wd11_cpu_state->putAMword((unsigned char *)&saddr, 0x38); /* real doesn't def... */
+  wd16_cpu_state->putAMword((unsigned char *)&daddr, 0x30); // fill 'save area'...
+  wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.SP, 0x32);
+  wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.PC, 0x34);
+  wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.R0, 0x36);
+  wd16_cpu_state->putAMword((unsigned char *)&saddr, 0x38); /* real doesn't def... */
 
 } /* end function do_fmt_11 */

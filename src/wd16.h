@@ -23,39 +23,20 @@
 /* legally obtained from an authorized source.                       */
 /*                                                                   */
 /* ----------------------------------------------------------------- */
-#ifndef __WD16_H__
-#define __WD16_H__
+
+#ifndef __WESTERN_DIGITAL_WD16_H__
+#define __WESTERN_DIGITAL_WD16_H__
 
 #include <ctype.h>
 #include <errno.h>
-#include <fcntl.h>
-#include <netdb.h>
 #include <pthread.h>
-#include <setjmp.h>
-#include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <string.h>
-#include <termios.h>
-#include <time.h>
 #include <unistd.h>
-
-#include <menu.h>
-#include <ncurses.h>
-#include <panel.h>
-
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/ioctl.h>
-#include <sys/mtio.h>
-#include <sys/resource.h>
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/utsname.h>
-
+#include <stdint.h>
 #include <assert.h>
 
 #ifdef __cplusplus
@@ -211,7 +192,7 @@ typedef void (*trace_fmt_H_callback_t)(int i);
 // void   trace_fmtInvalid(void);
 typedef void (*trace_fmt_I_callback_t)(void);
 
-typedef struct _wd11_cpu_state_t
+typedef struct _wd16_cpu_state_t
 {
   REGS regs;
 
@@ -259,9 +240,9 @@ typedef struct _wd11_cpu_state_t
   put_word_by_mode_callback_t     putAMwordBYmode;
   put_byte_by_mode_callback_t     putAMbyteBYmode;
 
-} wd11_cpu_state_t;
+} wd16_cpu_state_t;
 
-extern wd11_cpu_state_t wd11_cpu_state;
+extern wd16_cpu_state_t wd16_cpu_state;
 
 void do_fmt_invalid(void);
 void execute_instruction(void);

@@ -27,10 +27,10 @@
 #include "cpu-fmt2.h"
 
 #define do_each(opc)                                  \
-  if (wd11_cpu_state->regs.tracing)                   \
-    wd11_cpu_state->trace_fmt2(opc, reg);
+  if (wd16_cpu_state->regs.tracing)                   \
+    wd16_cpu_state->trace_fmt2(opc, reg);
 
-void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
+void do_fmt_2(wd16_cpu_state_t* wd16_cpu_state) {
   int op2, reg;
   uint16_t tmp;
 
@@ -43,8 +43,8 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
   //      argument.
   //
 
-  reg = wd11_cpu_state->op & 7;
-  op2 = wd11_cpu_state->op >> 3;
+  reg = wd16_cpu_state->op & 7;
+  op2 = wd16_cpu_state->op >> 3;
 
   switch (op2) {
   case 2:
@@ -60,8 +60,8 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("IAC");
     // ??? interrrupt acknowledge ???
-    wd11_cpu_state->regs.gpr[reg] = 0;
-    wd11_cpu_state->regs.PS.I2 = 0;
+    wd16_cpu_state->regs.gpr[reg] = 0;
+    wd16_cpu_state->regs.PS.I2 = 0;
     break;
   case 3:
     //      RTN             RETURN FROM SUBROUTINE
@@ -76,9 +76,9 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     Unchanged
     //
     do_each("RTN");
-    wd11_cpu_state->regs.PC = wd11_cpu_state->regs.gpr[reg];
-    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
-    wd11_cpu_state->regs.SP += 2;
+    wd16_cpu_state->regs.PC = wd16_cpu_state->regs.gpr[reg];
+    wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.gpr[reg], wd16_cpu_state->regs.SP);
+    wd16_cpu_state->regs.SP += 2;
     break;
   case 4:
     //      MSKO            MASK OUT
@@ -92,7 +92,7 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICTORS:      Unchanged
     //
     do_each("MSKO");
-    wd11_cpu_state->putAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], 0x2E);
+    wd16_cpu_state->putAMword((unsigned char *)&wd16_cpu_state->regs.gpr[reg], 0x2E);
     // ??? mask out ???
     break;
   case 5:
@@ -108,11 +108,11 @@ void do_fmt_2(wd11_cpu_state_t* wd11_cpu_state) {
     //      INDICATORS:     unchanged
     //
     do_each("PRTN");
-    wd11_cpu_state->getAMword((unsigned char *)&tmp, wd11_cpu_state->regs.SP);
-    wd11_cpu_state->regs.SP += 2 * tmp;
-    wd11_cpu_state->regs.PC = wd11_cpu_state->regs.gpr[reg];
-    wd11_cpu_state->getAMword((unsigned char *)&wd11_cpu_state->regs.gpr[reg], wd11_cpu_state->regs.SP);
-    wd11_cpu_state->regs.SP += 2;
+    wd16_cpu_state->getAMword((unsigned char *)&tmp, wd16_cpu_state->regs.SP);
+    wd16_cpu_state->regs.SP += 2 * tmp;
+    wd16_cpu_state->regs.PC = wd16_cpu_state->regs.gpr[reg];
+    wd16_cpu_state->getAMword((unsigned char *)&wd16_cpu_state->regs.gpr[reg], wd16_cpu_state->regs.SP);
+    wd16_cpu_state->regs.SP += 2;
     break;
   default:
     assert("cpu-fmt2.c - invalid return from fmt_2 lookup");

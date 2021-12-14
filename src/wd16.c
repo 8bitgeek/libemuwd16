@@ -38,7 +38,7 @@
 #include "cpu-fmt11.h"
 #include "instruction-type.h"
 
-wd11_cpu_state_t wd11_cpu_state;
+wd16_cpu_state_t wd16_cpu_state;
 
 /*-------------------------------------------------------------------*/
 /* when the opcode is invalid...                                     */
@@ -78,17 +78,17 @@ void do_fmt_invalid() {
   // --- so, this routine will load up PC from "1C" unless the offending
   // --- opcode is greater than F000 (fmt 11) when it will load from "1A".
   //
-  wd11_cpu_state.regs.SP -= 2;
-  wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
-  wd11_cpu_state.regs.SP -= 2;
-  wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
-  wd11_cpu_state.regs.waiting = 0;
-  wd11_cpu_state.regs.trace = 0;
-  wd11_cpu_state.regs.PS.I2 = 0;
-  if (wd11_cpu_state.op > 0xf000)
-    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1A);
+  wd16_cpu_state.regs.SP -= 2;
+  wd16_cpu_state.putAMword((unsigned char *)&wd16_cpu_state.regs.PS, wd16_cpu_state.regs.SP);
+  wd16_cpu_state.regs.SP -= 2;
+  wd16_cpu_state.putAMword((unsigned char *)&wd16_cpu_state.regs.PC, wd16_cpu_state.regs.SP);
+  wd16_cpu_state.regs.waiting = 0;
+  wd16_cpu_state.regs.trace = 0;
+  wd16_cpu_state.regs.PS.I2 = 0;
+  if (wd16_cpu_state.op > 0xf000)
+    wd16_cpu_state.getAMword((unsigned char *)&wd16_cpu_state.regs.PC, 0x1A);
   else
-    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x1C);
+    wd16_cpu_state.getAMword((unsigned char *)&wd16_cpu_state.regs.PC, 0x1C);
 
 } /* end function do_fmt_invalid */
 
@@ -98,53 +98,53 @@ void do_fmt_invalid() {
 void execute_instruction() {
   char fmt;
 
-  wd11_cpu_state.regs.instcount++;
+  wd16_cpu_state.regs.instcount++;
 
-  wd11_cpu_state.oldPCindex = (wd11_cpu_state.oldPCindex + 1) % 256;
-  wd11_cpu_state.oldPCs[wd11_cpu_state.oldPCindex] = wd11_cpu_state.opPC = wd11_cpu_state.regs.PC;
+  wd16_cpu_state.oldPCindex = (wd16_cpu_state.oldPCindex + 1) % 256;
+  wd16_cpu_state.oldPCs[wd16_cpu_state.oldPCindex] = wd16_cpu_state.opPC = wd16_cpu_state.regs.PC;
 
-  wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.op, wd11_cpu_state.regs.PC);
-  wd11_cpu_state.regs.PC += 2;
+  wd16_cpu_state.getAMword((unsigned char *)&wd16_cpu_state.op, wd16_cpu_state.regs.PC);
+  wd16_cpu_state.regs.PC += 2;
 
-  fmt = instruction_type(wd11_cpu_state.op);
+  fmt = instruction_type(wd16_cpu_state.op);
   switch (fmt) {
   case 0:
-    if (wd11_cpu_state.regs.tracing) // <<-- here instead of in do_fmt_invalid
-      wd11_cpu_state.trace_fmtInvalid();
+    if (wd16_cpu_state.regs.tracing) // <<-- here instead of in do_fmt_invalid
+      wd16_cpu_state.trace_fmtInvalid();
     do_fmt_invalid(); // because other fmts may later call
     break;            // do_fmt_invalid if further decode fails
   case 1:
-    do_fmt_1(&wd11_cpu_state);
+    do_fmt_1(&wd16_cpu_state);
     break;
   case 2:
-    do_fmt_2(&wd11_cpu_state);
+    do_fmt_2(&wd16_cpu_state);
     break;
   case 3:
-    do_fmt_3(&wd11_cpu_state);
+    do_fmt_3(&wd16_cpu_state);
     break;
   case 4:
-    do_fmt_4(&wd11_cpu_state);
+    do_fmt_4(&wd16_cpu_state);
     break;
   case 5:
-    do_fmt_5(&wd11_cpu_state);
+    do_fmt_5(&wd16_cpu_state);
     break;
   case 6:
-    do_fmt_6(&wd11_cpu_state);
+    do_fmt_6(&wd16_cpu_state);
     break;
   case 7:
-    do_fmt_7(&wd11_cpu_state);
+    do_fmt_7(&wd16_cpu_state);
     break;
   case 8:
-    do_fmt_8(&wd11_cpu_state);
+    do_fmt_8(&wd16_cpu_state);
     break;
   case 9:
-    do_fmt_9(&wd11_cpu_state);
+    do_fmt_9(&wd16_cpu_state);
     break;
   case 10:
-    do_fmt_10(&wd11_cpu_state);
+    do_fmt_10(&wd16_cpu_state);
     break;
   case 11:
-    do_fmt_11(&wd11_cpu_state);
+    do_fmt_11(&wd16_cpu_state);
     break;
   default:
     assert("cpu.c - bad return from inst format lookup");
@@ -160,28 +160,28 @@ void perform_interrupt() {
   int i = 0;
   uint16_t tmp;
 
-  if (wd11_cpu_state.regs.stepping == 1)
+  if (wd16_cpu_state.regs.stepping == 1)
     return;
 
-  while ((wd11_cpu_state.regs.whichint[i] == 0) && (i < 9))
+  while ((wd16_cpu_state.regs.whichint[i] == 0) && (i < 9))
     i++;
 
-  if (wd11_cpu_state.regs.tracing)
-    wd11_cpu_state.trace_Interrupt(i);
+  if (wd16_cpu_state.regs.tracing)
+    wd16_cpu_state.trace_Interrupt(i);
 
-  pthread_mutex_lock(&wd11_cpu_state.intlock_t);
+  pthread_mutex_lock(&wd16_cpu_state.intlock_t);
 
   switch (i) {
   case 0: // non-vectored
-    wd11_cpu_state.regs.SP -= 2;
-    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
-    wd11_cpu_state.regs.SP -= 2;
-    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
-    wd11_cpu_state.regs.waiting = 0;
-    wd11_cpu_state.regs.trace = 0;
-    wd11_cpu_state.regs.PS.I2 = 0;
-    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, 0x2A); // non-power-fail
-    wd11_cpu_state.regs.whichint[i] = 0;
+    wd16_cpu_state.regs.SP -= 2;
+    wd16_cpu_state.putAMword((unsigned char *)&wd16_cpu_state.regs.PS, wd16_cpu_state.regs.SP);
+    wd16_cpu_state.regs.SP -= 2;
+    wd16_cpu_state.putAMword((unsigned char *)&wd16_cpu_state.regs.PC, wd16_cpu_state.regs.SP);
+    wd16_cpu_state.regs.waiting = 0;
+    wd16_cpu_state.regs.trace = 0;
+    wd16_cpu_state.regs.PS.I2 = 0;
+    wd16_cpu_state.getAMword((unsigned char *)&wd16_cpu_state.regs.PC, 0x2A); // non-power-fail
+    wd16_cpu_state.regs.whichint[i] = 0;
     break;
   case 1:
   case 2:
@@ -191,28 +191,28 @@ void perform_interrupt() {
   case 6:
   case 7:
   case 8:
-    wd11_cpu_state.regs.SP -= 2;
-    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PS, wd11_cpu_state.regs.SP);
-    wd11_cpu_state.regs.SP -= 2;
-    wd11_cpu_state.putAMword((unsigned char *)&wd11_cpu_state.regs.PC, wd11_cpu_state.regs.SP);
-    wd11_cpu_state.regs.waiting = 0;
-    wd11_cpu_state.regs.trace = 0;
-    wd11_cpu_state.regs.PS.I2 = 0;
-    wd11_cpu_state.getAMword((unsigned char *)&tmp, 050);
+    wd16_cpu_state.regs.SP -= 2;
+    wd16_cpu_state.putAMword((unsigned char *)&wd16_cpu_state.regs.PS, wd16_cpu_state.regs.SP);
+    wd16_cpu_state.regs.SP -= 2;
+    wd16_cpu_state.putAMword((unsigned char *)&wd16_cpu_state.regs.PC, wd16_cpu_state.regs.SP);
+    wd16_cpu_state.regs.waiting = 0;
+    wd16_cpu_state.regs.trace = 0;
+    wd16_cpu_state.regs.PS.I2 = 0;
+    wd16_cpu_state.getAMword((unsigned char *)&tmp, 050);
     tmp += (016 - 2 * i);
-    wd11_cpu_state.getAMword((unsigned char *)&wd11_cpu_state.regs.PC, tmp);
-    wd11_cpu_state.regs.PC += tmp;
-    wd11_cpu_state.regs.whichint[i] = 0;
+    wd16_cpu_state.getAMword((unsigned char *)&wd16_cpu_state.regs.PC, tmp);
+    wd16_cpu_state.regs.PC += tmp;
+    wd16_cpu_state.regs.whichint[i] = 0;
     break;
   default:
     assert("cpu.c - invalid interrupt level");
   }
 
-  for (i = 0, wd11_cpu_state.regs.intpending = 0; i < 9; i++)
-    if (wd11_cpu_state.regs.whichint[i] == 1)
-      wd11_cpu_state.regs.intpending = 1;
+  for (i = 0, wd16_cpu_state.regs.intpending = 0; i < 9; i++)
+    if (wd16_cpu_state.regs.whichint[i] == 1)
+      wd16_cpu_state.regs.intpending = 1;
 
-  pthread_mutex_unlock(&wd11_cpu_state.intlock_t);
+  pthread_mutex_unlock(&wd16_cpu_state.intlock_t);
 
 } /* end function perform_interrupt */
 
@@ -222,17 +222,17 @@ void perform_interrupt() {
 void cpu_thread() {
 
   do {
-    if (wd11_cpu_state.regs.waiting == 0) {
-      if ((wd11_cpu_state.regs.intpending == 1) && (wd11_cpu_state.regs.PS.I2 == 1))
+    if (wd16_cpu_state.regs.waiting == 0) {
+      if ((wd16_cpu_state.regs.intpending == 1) && (wd16_cpu_state.regs.PS.I2 == 1))
         perform_interrupt();
       execute_instruction();
-      if (wd11_cpu_state.regs.stepping == 1) {
-        wd11_cpu_state.regs.waiting = 1;
-        wd11_cpu_state.regs.stepping = 0;
+      if (wd16_cpu_state.regs.stepping == 1) {
+        wd16_cpu_state.regs.waiting = 1;
+        wd16_cpu_state.regs.stepping = 0;
       }
     } else
       usleep(500);
-  } while (wd11_cpu_state.regs.halting == 0);
+  } while (wd16_cpu_state.regs.halting == 0);
   pthread_exit(0);
 } /* end function cpu_thread */
 
@@ -240,6 +240,6 @@ void cpu_thread() {
 /* CPU stop                                                          */
 /*-------------------------------------------------------------------*/
 void cpu_stop() {
-  wd11_cpu_state.regs.halting = 1;
-  pthread_join(wd11_cpu_state.cpu_t, NULL);
+  wd16_cpu_state.regs.halting = 1;
+  pthread_join(wd16_cpu_state.cpu_t, NULL);
 }

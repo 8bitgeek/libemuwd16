@@ -27,10 +27,10 @@
 #include "cpu-fmt6.h"
 
 #define do_each(opc)                                             \
-  if (wd11_cpu_state->regs.tracing)                              \
-    wd11_cpu_state->trace_fmt6(opc, count, reg);
+  if (wd16_cpu_state->regs.tracing)                              \
+    wd16_cpu_state->trace_fmt6(opc, count, reg);
 
-void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
+void do_fmt_6(wd16_cpu_state_t* wd16_cpu_state) {
   int op6, op6a, op6b, count, reg, tmp, tmp2, reg2, i;
 
   //      FORMAT 6 OP CODES
@@ -51,10 +51,10 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
   //      the operand. If REG = PC then (REG+l) = R0.
   //
 
-  count = (wd11_cpu_state->op & 15) + 1;
-  op6a = (wd11_cpu_state->op & 63) >> 4;  /* 0, 1, 2, 3 */
-  reg = (wd11_cpu_state->op & 511) >> 6;
-  op6b = wd11_cpu_state->op >> 9;         /* 4, 68, 71 */
+  count = (wd16_cpu_state->op & 15) + 1;
+  op6a = (wd16_cpu_state->op & 63) >> 4;  /* 0, 1, 2, 3 */
+  reg = (wd16_cpu_state->op & 511) >> 6;
+  op6b = wd16_cpu_state->op >> 9;         /* 4, 68, 71 */
   if (op6b == 68)
     op6b--;               /* 4, 67, 71 */
   op6 = op6b + op6a;      /* 4,5,6,7; 67,68,69,70; 71,72,73,74 */
@@ -76,18 +76,18 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //                      of the result
     //
     do_each("ADDI");
-    tmp = wd11_cpu_state->regs.spr[reg];
-    wd11_cpu_state->regs.gpr[reg] += count;
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
-    if ((tmp >= 0) && (wd11_cpu_state->regs.spr[reg] < 0))
-      wd11_cpu_state->regs.PS.V = 1;
-    wd11_cpu_state->regs.PS.C = 0;
-    if ((tmp < 0) && (wd11_cpu_state->regs.spr[reg] >= 0))
-      wd11_cpu_state->regs.PS.C = 1;
+    tmp = wd16_cpu_state->regs.spr[reg];
+    wd16_cpu_state->regs.gpr[reg] += count;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
+    if ((tmp >= 0) && (wd16_cpu_state->regs.spr[reg] < 0))
+      wd16_cpu_state->regs.PS.V = 1;
+    wd16_cpu_state->regs.PS.C = 0;
+    if ((tmp < 0) && (wd16_cpu_state->regs.spr[reg] >= 0))
+      wd16_cpu_state->regs.PS.C = 1;
     break;
   case 5:
     //      SUBI            SUBTRACT IMMEDIATE
@@ -105,18 +105,18 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //                      of the result
     //
     do_each("SUBI");
-    tmp = wd11_cpu_state->regs.spr[reg];
-    wd11_cpu_state->regs.gpr[reg] -= count;
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
-    if ((tmp < 0) && (wd11_cpu_state->regs.spr[reg] >= 0))
-      wd11_cpu_state->regs.PS.V = 1;
-    wd11_cpu_state->regs.PS.C = 0;
-    if ((tmp >= 0) && (wd11_cpu_state->regs.spr[reg] < 0))
-      wd11_cpu_state->regs.PS.C = 1;
+    tmp = wd16_cpu_state->regs.spr[reg];
+    wd16_cpu_state->regs.gpr[reg] -= count;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
+    if ((tmp < 0) && (wd16_cpu_state->regs.spr[reg] >= 0))
+      wd16_cpu_state->regs.PS.V = 1;
+    wd16_cpu_state->regs.PS.C = 0;
+    if ((tmp >= 0) && (wd16_cpu_state->regs.spr[reg] < 0))
+      wd16_cpu_state->regs.PS.C = 1;
     break;
   case 6:
     //      BICI            BIT CLEAR IMMEDIATE
@@ -131,12 +131,12 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Unchanged
     //
     do_each("BICI");
-    wd11_cpu_state->regs.gpr[reg] &= ~count;
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.gpr[reg] &= ~count;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = 0;
     break;
   case 7:
     //      MOVI            MOVE IMMEDIATE
@@ -151,10 +151,10 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //                      C = Unchanged
     //
     do_each("MOVI");
-    wd11_cpu_state->regs.gpr[reg] = count;
-    wd11_cpu_state->regs.PS.N = 0;
-    wd11_cpu_state->regs.PS.Z = 0;
-    wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.gpr[reg] = count;
+    wd16_cpu_state->regs.PS.N = 0;
+    wd16_cpu_state->regs.PS.Z = 0;
+    wd16_cpu_state->regs.PS.V = 0;
     break;
   case 67:
     //      SSRR            SHIFT SINGLE RIGHT ROTATE
@@ -176,18 +176,18 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SSRR");
     for (i = 0; i < count; i++) {
-      tmp = wd11_cpu_state->regs.gpr[reg] & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] >> 1;
-      if (wd11_cpu_state->regs.PS.C == 1)
-        wd11_cpu_state->regs.gpr[reg] |= 0x8000;
-      wd11_cpu_state->regs.PS.C = tmp;
+      tmp = wd16_cpu_state->regs.gpr[reg] & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] >> 1;
+      if (wd16_cpu_state->regs.PS.C == 1)
+        wd16_cpu_state->regs.gpr[reg] |= 0x8000;
+      wd16_cpu_state->regs.PS.C = tmp;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 68:
     //      SSLR            SHIFT SINGLE LEFT ROTATE
@@ -205,17 +205,17 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SSLR");
     for (i = 0; i < count; i++) {
-      tmp = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] << 1;
-      if (wd11_cpu_state->regs.PS.C == 1)
-        wd11_cpu_state->regs.gpr[reg] |= 1;
-      wd11_cpu_state->regs.PS.C = tmp;
+      tmp = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] << 1;
+      if (wd16_cpu_state->regs.PS.C == 1)
+        wd16_cpu_state->regs.gpr[reg] |= 1;
+      wd16_cpu_state->regs.PS.C = tmp;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   case 69:
     //      SSRA            SHIFT SINGLE RIGHT ARITHMETIC
@@ -239,18 +239,18 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SSRA");
     for (i = 0; i < count; i++) {
-      tmp = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-      wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.gpr[reg] & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] >> 1;
+      tmp = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+      wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.gpr[reg] & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] >> 1;
       if (tmp == 1)
-        wd11_cpu_state->regs.gpr[reg] |= 0x8000;
+        wd16_cpu_state->regs.gpr[reg] |= 0x8000;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 70:
     //      SSLA            SHIFT SINGLE LEFT ARITHMETIC
@@ -269,14 +269,14 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     //
     do_each("SSLA");
     for (i = 0; i < count; i++) {
-      wd11_cpu_state->regs.PS.C = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] << 1;
+      wd16_cpu_state->regs.PS.C = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] << 1;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   case 71:
     //      SDRR            SHIFT DOUBLE RIGHT ROTATE
@@ -300,22 +300,22 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     do_each("SDRR");
     reg2 = (reg + 1) % 8;
     for (i = 0; i < count; i++) {
-      tmp = wd11_cpu_state->regs.gpr[reg] & 1;
-      tmp2 = wd11_cpu_state->regs.gpr[reg2] & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] >> 1;
-      wd11_cpu_state->regs.gpr[reg2] = wd11_cpu_state->regs.gpr[reg2] >> 1;
-      if (wd11_cpu_state->regs.PS.C == 1)
-        wd11_cpu_state->regs.gpr[reg2] |= 0x8000;
+      tmp = wd16_cpu_state->regs.gpr[reg] & 1;
+      tmp2 = wd16_cpu_state->regs.gpr[reg2] & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] >> 1;
+      wd16_cpu_state->regs.gpr[reg2] = wd16_cpu_state->regs.gpr[reg2] >> 1;
+      if (wd16_cpu_state->regs.PS.C == 1)
+        wd16_cpu_state->regs.gpr[reg2] |= 0x8000;
       if (tmp2 == 1)
-        wd11_cpu_state->regs.gpr[reg] |= 0x8000;
-      wd11_cpu_state->regs.PS.C = tmp;
+        wd16_cpu_state->regs.gpr[reg] |= 0x8000;
+      wd16_cpu_state->regs.PS.C = tmp;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 72:
     //      SDLR            SHIFT DOUBLE LEFT ROTATE
@@ -335,21 +335,21 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     do_each("SDLR");
     reg2 = (reg + 1) % 8;
     for (i = 0; i < count; i++) {
-      tmp = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-      tmp2 = (wd11_cpu_state->regs.gpr[reg2] >> 15) & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] << 1;
-      wd11_cpu_state->regs.gpr[reg2] = wd11_cpu_state->regs.gpr[reg2] << 1;
-      if (wd11_cpu_state->regs.PS.C == 1)
-        wd11_cpu_state->regs.gpr[reg] |= 1;
+      tmp = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+      tmp2 = (wd16_cpu_state->regs.gpr[reg2] >> 15) & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] << 1;
+      wd16_cpu_state->regs.gpr[reg2] = wd16_cpu_state->regs.gpr[reg2] << 1;
+      if (wd16_cpu_state->regs.PS.C == 1)
+        wd16_cpu_state->regs.gpr[reg] |= 1;
       if (tmp == 1)
-        wd11_cpu_state->regs.gpr[reg2] |= 1;
-      wd11_cpu_state->regs.PS.C = tmp2;
+        wd16_cpu_state->regs.gpr[reg2] |= 1;
+      wd16_cpu_state->regs.PS.C = tmp2;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg2] >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg2] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg2] >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg2] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   case 73:
     //      SDRA            SHIFT DOUBLE RIGHT ARITHMETIC
@@ -375,22 +375,22 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     do_each("SDRA");
     reg2 = (reg + 1) % 8;
     for (i = 0; i < count; i++) {
-      wd11_cpu_state->regs.PS.C = wd11_cpu_state->regs.gpr[reg] & 1;
-      tmp = wd11_cpu_state->regs.gpr[reg2] & 1;
-      tmp2 = (wd11_cpu_state->regs.gpr[reg2] >> 15) & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] >> 1;
-      wd11_cpu_state->regs.gpr[reg2] = wd11_cpu_state->regs.gpr[reg2] >> 1;
+      wd16_cpu_state->regs.PS.C = wd16_cpu_state->regs.gpr[reg] & 1;
+      tmp = wd16_cpu_state->regs.gpr[reg2] & 1;
+      tmp2 = (wd16_cpu_state->regs.gpr[reg2] >> 15) & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] >> 1;
+      wd16_cpu_state->regs.gpr[reg2] = wd16_cpu_state->regs.gpr[reg2] >> 1;
       if (tmp == 1)
-        wd11_cpu_state->regs.gpr[reg] |= 0x8000;
+        wd16_cpu_state->regs.gpr[reg] |= 0x8000;
       if (tmp2 == 1)
-        wd11_cpu_state->regs.gpr[reg2] |= 0x8000;
+        wd16_cpu_state->regs.gpr[reg2] |= 0x8000;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg] >> 7) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
-    /* ??? */ wd11_cpu_state->regs.PS.V = 0;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg] >> 7) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
+    /* ??? */ wd16_cpu_state->regs.PS.V = 0;
     break;
   case 74:
     //      SDLA            SHIFT DOUBLE LEFT ARITHMETIC
@@ -411,18 +411,18 @@ void do_fmt_6(wd11_cpu_state_t* wd11_cpu_state) {
     do_each("SDLA");
     reg2 = (reg + 1) % 8;
     for (i = 0; i < count; i++) {
-      wd11_cpu_state->regs.PS.C = (wd11_cpu_state->regs.gpr[reg2] >> 15) & 1;
-      tmp = (wd11_cpu_state->regs.gpr[reg] >> 15) & 1;
-      wd11_cpu_state->regs.gpr[reg] = wd11_cpu_state->regs.gpr[reg] << 1;
-      wd11_cpu_state->regs.gpr[reg2] = wd11_cpu_state->regs.gpr[reg2] << 1;
+      wd16_cpu_state->regs.PS.C = (wd16_cpu_state->regs.gpr[reg2] >> 15) & 1;
+      tmp = (wd16_cpu_state->regs.gpr[reg] >> 15) & 1;
+      wd16_cpu_state->regs.gpr[reg] = wd16_cpu_state->regs.gpr[reg] << 1;
+      wd16_cpu_state->regs.gpr[reg2] = wd16_cpu_state->regs.gpr[reg2] << 1;
       if (tmp == 1)
-        wd11_cpu_state->regs.gpr[reg2] |= 1;
+        wd16_cpu_state->regs.gpr[reg2] |= 1;
     }
-    wd11_cpu_state->regs.PS.N = (wd11_cpu_state->regs.gpr[reg2] >> 15) & 1;
-    wd11_cpu_state->regs.PS.Z = 0;
-    if (wd11_cpu_state->regs.gpr[reg2] == 0)
-      wd11_cpu_state->regs.PS.Z = 1;
-    wd11_cpu_state->regs.PS.V = wd11_cpu_state->regs.PS.C ^ wd11_cpu_state->regs.PS.N;
+    wd16_cpu_state->regs.PS.N = (wd16_cpu_state->regs.gpr[reg2] >> 15) & 1;
+    wd16_cpu_state->regs.PS.Z = 0;
+    if (wd16_cpu_state->regs.gpr[reg2] == 0)
+      wd16_cpu_state->regs.PS.Z = 1;
+    wd16_cpu_state->regs.PS.V = wd16_cpu_state->regs.PS.C ^ wd16_cpu_state->regs.PS.N;
     break;
   default:
     assert("cp-fmt6.c - invalid return from fmt_6 lookup");
