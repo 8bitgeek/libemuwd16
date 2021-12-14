@@ -38,9 +38,7 @@ CFLAGS   = -Os -I./src -DVERSION=$(VERSION) -Wno-unused-result 			\
 									-Wno-discarded-qualifiers 	\
 									-Wno-int-to-pointer-cast
 
-#	   -march=pentium -malign-double -mwide-multiply
-
-LFLAGS	 = -lm -lpthread
+LFLAGS	 = -lm -lpthread -lncurses -lpanel -lmenu
 
 OBJS     = src/wd16.o \
 	   		src/cpu-fmt1.o \
