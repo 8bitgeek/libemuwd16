@@ -42,8 +42,6 @@ CFLAGS   = -Os -I./src -DVERSION=$(VERSION) -Wno-unused-result 			\
 
 LFLAGS	 = -lm -lpthread -lncurses -lpanel -lmenu
 
-EXEFILES = ad16 tapfil filtap tapdir
-
 TARFILES = makefile *.c *.h *.ini
 
 OBJS     = src/wd16.o \
@@ -69,5 +67,5 @@ $(OBJS): %.o: %.c $(HEADERS) makefile
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
-	rm -f $(EXEFILES) $(EXEFILES).exe src/*.o
+	rm -f src/*.o $(TARGET)
 
